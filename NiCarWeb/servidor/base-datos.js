@@ -1,12 +1,13 @@
 import pg from 'pg';
-const certificadoSupabase = process.env.DATABASE_SSL_CERT?.replace(/\\n/g, '\n');
+const certificadoSupabase = process.env.DATABASE_SSL_CERT?.replace(/\\n/g, '\n').trim();
+const sslProduccion = process.env.NODE_ENV === 'production';
+if (sslProduccion && !certificadoSupabase?.includes('-----BEGIN CERTIFICATE-----')) {
+  throw new Error('En producci�n, DATABASE_SSL_CERT debe contener la CA ra�z PEM de Supabase.');
+}
 export const conexion = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production'
-    ? {
-        rejectUnauthorized: Boolean(certificadoSupabase),
-        ...(certificadoSupabase ? { ca: certificadoSupabase } : {})
-      }
+  ssl: sslProduccion
+    ? { ca: certificadoSupabase, rejectUnauthorized: true }
     : undefined,
   max: 5,
   connectionTimeoutMillis: 10000
