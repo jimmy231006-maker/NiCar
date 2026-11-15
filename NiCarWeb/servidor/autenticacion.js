@@ -31,32 +31,35 @@ export async function atenderAutenticacion(solicitud, respuesta, ruta, usuario) 
   const datos = await leerFormulario(solicitud);
   if (ruta.endsWith('/registro')) {
     datos.Nombre = [datos.Nombres,datos.Apellidos].join(' ');
-    const nacimiento = validaciones.validarRegistro(datos);
-    const cliente = new Cliente(datos.Nombre, datos.Correo, nacimiento.value, nacimiento.birth);
+    const identificacion = validaciones.validarRegistro(datos);
+    const cliente = new Cliente(datos.Nombre, datos.Correo, identificacion);
     const perfil = cliente.obtenerDatos();
     const clave = await crearCredenciales(datos.Contrasena);
     await ejecutarTransaccion(async baseDatos => {
       const idCliente = await new ServicioClientes(baseDatos).registrar(datos);
       await baseDatos.query(
       `INSERT INTO nicar."Usuario"
-      ("NombreUsuario","NombreCompleto","Cedula","Nacimiento","Rol","HashContrasena","Salt","DebeCambiarContrasena","IdCliente")
-      VALUES ($1,$2,$3,$4,'Cliente',$5,$6,false,$7)`,
+      ("NombreUsuario","NombreCompleto","Cedula","Nacimiento","TipoDocumento","NumeroDocumento","EdadDeclarada","Rol","HashContrasena","Salt","DebeCambiarContrasena","IdCliente")
+      VALUES ($1,$2,$3,$4,$5,$6,$7,'Cliente',$8,$9,false,$10)`,
       [
         perfil.NombreUsuario,
         perfil.NombreCompleto,
         perfil.Cedula,
         perfil.Nacimiento,
+        perfil.TipoDocumento,
+        perfil.NumeroDocumento,
+        perfil.EdadDeclarada,
         clave.HashContrasena,
         clave.Salt,
         idCliente
       ]
     );
     });
-    responderJson(respuesta, { message: 'Cuenta creada. Iniciá sesión.' }, 201);
+    responderJson(respuesta, { message: 'Cuenta creada. Inici� sesi�n.' }, 201);
   } else if (ruta.endsWith('/ingresar')) {
     validarCorreo(datos.Correo);
     if (typeof datos.Contrasena !== 'string' || datos.Contrasena.length > 100) {
-      rechazar('Revisá tus credenciales.');
+      rechazar('Revis� tus credenciales.');
     }
     const resultado = await ejecutarTransaccion(async (baseDatos) => {
       const { rows: filas } = await baseDatos.query(
@@ -86,12 +89,12 @@ export async function atenderAutenticacion(solicitud, respuesta, ruta, usuario) 
           [datos.Correo.trim()]
         );
         const restantes = accountRestantes(cuenta);
-        const mensaje = !cuenta ? 'El usuario no está registrado.'
-          : !cuenta.Activo ? 'La cuenta está desactivada.'
-          : esSuperAdministrador ? 'El usuario es correcto, pero la contraseña no coincide.'
-          : bloqueada ? 'La cuenta está bloqueada. Esperá 15 minutos.'
-          : restantes === 0 ? 'El usuario es correcto. Se agotaron los cinco intentos. Esperá 15 minutos.'
-          : 'El usuario es correcto, pero la contraseña no. Te quedan ' + restantes + ' intentos.';
+        const mensaje = !cuenta ? 'El usuario no est� registrado.'
+          : !cuenta.Activo ? 'La cuenta est� desactivada.'
+          : esSuperAdministrador ? 'El usuario es correcto, pero la contrase�a no coincide.'
+          : bloqueada ? 'La cuenta est� bloqueada. Esper� 15 minutos.'
+          : restantes === 0 ? 'El usuario es correcto. Se agotaron los cinco intentos. Esper� 15 minutos.'
+          : 'El usuario es correcto, pero la contrase�a no. Te quedan ' + restantes + ' intentos.';
         return { mensaje };
       }
       await baseDatos.query(
@@ -99,7 +102,7 @@ export async function atenderAutenticacion(solicitud, respuesta, ruta, usuario) 
         [cuenta.IdUsuario]
       );
       await baseDatos.query(
-        `INSERT INTO nicar."LogAcceso" ("IdUsuario","NombreIngresado","Evento") VALUES ($1,$2,'Inicio de sesión')`,
+        `INSERT INTO nicar."LogAcceso" ("IdUsuario","NombreIngresado","Evento") VALUES ($1,$2,'Inicio de sesi�n')`,
         [cuenta.IdUsuario, cuenta.NombreUsuario]
       );
       const token = crearToken();
@@ -114,7 +117,7 @@ export async function atenderAutenticacion(solicitud, respuesta, ruta, usuario) 
       rechazar(resultado.mensaje,401);
     }
     guardarCookie(respuesta, resultado.token);
-    responderJson(respuesta, { message: 'Sesión iniciada.' });
+    responderJson(respuesta, { message: 'Sesi�n iniciada.' });
   } else if (ruta.endsWith('/salir')) {
     const token = /nicar=([a-f0-9]{64})/.exec(solicitud.headers.cookie || '')?.[1];
     if (token) {
@@ -123,10 +126,10 @@ export async function atenderAutenticacion(solicitud, respuesta, ruta, usuario) 
       ]);
     }
     guardarCookie(respuesta, '', 0);
-    responderJson(respuesta, { message: 'Sesión cerrada.' });
+    responderJson(respuesta, { message: 'Sesi�n cerrada.' });
   } else if (ruta.endsWith('/contrasena')) {
     if (!usuario) {
-      rechazar('Iniciá sesión.', 401);
+      rechazar('Inici� sesi�n.', 401);
     }
     validarContrasena(datos.Nueva);
     const { rows: filas } = await conexion.query(
@@ -134,7 +137,7 @@ export async function atenderAutenticacion(solicitud, respuesta, ruta, usuario) 
       [usuario.IdUsuario]
     );
     if (!(await verificarContrasena(String(datos.Actual || ''), filas[0]))) {
-      rechazar('La contraseña actual no coincide.');
+      rechazar('La contrase�a actual no coincide.');
     }
     const clave = await crearCredenciales(datos.Nueva);
     await ejecutarTransaccion(async (baseDatos) => {
@@ -148,10 +151,11 @@ export async function atenderAutenticacion(solicitud, respuesta, ruta, usuario) 
     });
     guardarCookie(respuesta, '', 0);
     responderJson(respuesta, {
-      message: 'Contraseña actualizada. Volvé a iniciar sesión.'
+      message: 'Contrase�a actualizada. Volv� a iniciar sesi�n.'
     });
   } else {
     return false;
   }
   return true;
 }
+
