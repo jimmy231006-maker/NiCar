@@ -1,20 +1,24 @@
 import { crearElemento, obtenerEtiqueta, mostrarAviso } from './elementos.js';
 function obtenerAyudaCampo(clave, opciones) {
   if (opciones.ayuda) return opciones.ayuda;
-  if (opciones.choices) return 'Seleccioná una opción de la lista.';
-  if (clave === 'Correo' || opciones.type === 'email') return 'Formato: nombre@dominio.com. No escribás espacios.';
-  if (clave === 'Telefono' || opciones.type === 'tel') return '8 dígitos; debe comenzar con 5, 7 u 8.';
-  if (clave === 'Cedula') return 'Formato: 001-010190-0001A (13 dígitos y una letra).';
-  if (opciones.type === 'contrasena' && (opciones.minLength || clave === 'Contrasena' || clave === 'Nueva')) {
-    return 'Usá entre 12 y 100 caracteres.';
+  if (opciones.choices) return 'Seleccion� una opci�n de la lista.';
+  if (clave === 'Correo' || opciones.type === 'email') {
+    return 'Formato: nombre@dominio.com. No escrib�s espacios.';
   }
-  if (opciones.type === 'date') return 'Elegí una fecha válida en el calendario.';
-  if (opciones.type === 'datetime-local') return 'Elegí una fecha y hora disponibles.';
+  if (clave === 'Telefono' || opciones.type === 'tel') {
+    return '8 d�gitos; debe comenzar con 5, 7 u 8.';
+  }
+  if (clave === 'Cedula') return 'Formato: 001-010190-0001A (13 d�gitos y una letra).';
+  if (opciones.type === 'contrasena' && (opciones.minLength || clave === 'Contrasena' || clave === 'Nueva')) {
+    return 'Us� entre 12 y 100 caracteres.';
+  }
+  if (opciones.type === 'date') return 'Eleg� una fecha v�lida en el calendario.';
+  if (opciones.type === 'datetime-local') return 'Eleg� una fecha y hora disponibles.';
   if (opciones.type === 'number') {
     const minimo = opciones.min ?? 0;
     const maximo = opciones.max;
-    return maximo == null ? `Ingresá un número igual o mayor que ${minimo}.`
-      : `Ingresá un número entre ${minimo} y ${maximo}.`;
+    return maximo == null ? `Ingres� un n�mero igual o mayor que ${minimo}.`
+      : `Ingres� un n�mero entre ${minimo} y ${maximo}.`;
   }
   return opciones.required ? 'Este campo es obligatorio.' : '';
 }
@@ -47,20 +51,20 @@ function configurarIdentificacion(formulario) {
     numero.maxLength = esCedula ? 16 : 20;
     numero.minLength = esCedula ? 14 : esResidencia ? 6 : esPasaporte ? 5 : 0;
     numero.placeholder = esCedula ? '001-010190-0001A'
-      : esPasaporte ? 'A12345678' : esResidencia ? 'ABC123456' : 'Número de identificación';
-    numero.title = esCedula ? 'Cédula: 13 dígitos y una letra, con guiones opcionales.'
-      : esPasaporte ? 'Pasaporte: 5 a 20 letras o números; puede incluir guiones.'
-        : esResidencia ? 'Residencia: 6 a 20 letras o números; puede incluir guiones.'
-          : 'Ingresá el número completo del documento.';
-    if (etiqueta) etiqueta.textContent = esCedula ? 'Cédula nicaragüense'
-      : esPasaporte ? 'Número de pasaporte'
-        : esResidencia ? 'Número de residencia'
-          : 'Número de identificación';
+      : esPasaporte ? 'A12345678' : esResidencia ? 'ABC123456' : 'N�mero de identificaci�n';
+    numero.title = esCedula ? 'C�dula: 13 d�gitos y una letra, con guiones opcionales.'
+      : esPasaporte ? 'Pasaporte: 5 a 20 letras o n�meros; puede incluir guiones.'
+        : esResidencia ? 'Residencia: 6 a 20 letras o n�meros; puede incluir guiones.'
+          : 'Ingres� el n�mero completo del documento.';
+    if (etiqueta) etiqueta.textContent = esCedula ? 'C�dula nicarag�ense'
+      : esPasaporte ? 'N�mero de pasaporte'
+        : esResidencia ? 'N�mero de residencia'
+          : 'N�mero de identificaci�n';
     if (ayuda) ayuda.textContent = esCedula
-      ? 'Formato: 001-010190-0001A. La fecha de nacimiento se obtiene de la cédula.'
-      : esPasaporte ? 'Formato: 5 a 20 letras o números; se permiten guiones.'
-        : esResidencia ? 'Formato: 6 a 20 letras o números; se permiten guiones.'
-          : 'Ingresá el número completo del documento.';
+      ? 'Formato: 001-010190-0001A. La fecha de nacimiento se obtiene de la c�dula.'
+      : esPasaporte ? 'Formato: 5 a 20 letras o n�meros; se permiten guiones.'
+        : esResidencia ? 'Formato: 6 a 20 letras o n�meros; se permiten guiones.'
+          : 'Ingres� el n�mero completo del documento.';
     edad.type = 'number';
     edad.min = '18';
     edad.max = '120';
@@ -79,7 +83,7 @@ export function crearCampo(clave, opciones = {}) {
         'select',
         { name: clave, id: clave, required: opciones.required ? '' : undefined,
           'aria-describedby': idAyuda, title: ayuda || undefined },
-        crearElemento('option', { value: '' }, 'Seleccioná'),
+        crearElemento('option', { value: '' }, 'Seleccion�'),
         ...opciones.choices.map((elemento) =>
           crearElemento(
             'option',
@@ -112,7 +116,7 @@ export function crearCampo(clave, opciones = {}) {
     entrada.pattern = '[578][0-9]{7}';
     entrada.inputMode = 'numeric';
     entrada.placeholder = '88881234';
-    entrada.title = 'Ocho dígitos, comenzando con 5, 7 u 8.';
+    entrada.title = 'Ocho d�gitos, comenzando con 5, 7 u 8.';
   }
   if (opciones.value != null) {
     entrada.value = opciones.value;
@@ -151,6 +155,7 @@ export function abrirFormularioModal(titulo, obtenerCampos, guardar) {
   document.querySelector('#campos-modal').replaceChildren(...obtenerCampos);
   const elemento = document.querySelector('#formulario-modal');
   activarAvisosDeCampo(elemento);
+  configurarIdentificacion(elemento);
   const problema = document.querySelector('#error-modal');
   problema.textContent = '';
   elemento.onsubmit = async (event) => {
@@ -171,3 +176,4 @@ export function abrirFormularioModal(titulo, obtenerCampos, guardar) {
   document.querySelector('#cerrar-modal').onclick = () => ventana.close();
   ventana.showModal();
 }
+
