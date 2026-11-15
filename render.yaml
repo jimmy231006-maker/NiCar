@@ -1,9 +1,15 @@
 services:
   - type: web
     name: nicar
-    runtime: docker
+    runtime: node
     plan: free
-    healthCheckPath: /
+    buildCommand: npm install --omit=dev
+    startCommand: npm start
+    healthCheckPath: /api/health
     envVars:
-      - key: ConnectionStrings__DefaultConnection
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: APP_ORIGIN
         sync: false

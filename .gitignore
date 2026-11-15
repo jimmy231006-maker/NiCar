@@ -1,7 +1,5 @@
-bin/
-obj/
-.vs/
-*.user
+node_modules/
 .env
 .env.*
-Database/0[4-7]*.sql
+!.env.example
+*.log

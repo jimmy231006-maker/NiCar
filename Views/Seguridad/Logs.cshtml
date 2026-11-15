@@ -1,6 +1,0 @@
-@model IEnumerable<NiCar.Controllers.SeguridadController.LogAccesoFila>
-@{ ViewData["Title"]="Registro de accesos"; }
-<h2>Registro de accesos</h2>
-<table class="table table-striped"><thead><tr><th>Fecha y hora</th><th>Usuario</th><th>Evento</th><th>ID</th></tr></thead><tbody>
-@foreach(var x in Model){<tr><td>@x.FechaHora.ToString("dd/MM/yyyy HH:mm:ss")</td><td>@x.NombreIngresado</td><td>@x.Evento</td><td>@x.IdUsuario</td></tr>}
-</tbody></table>

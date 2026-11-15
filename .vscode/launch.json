@@ -2,11 +2,12 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "NiCar web",
-      "type": "dotnet",
+      "type": "node",
       "request": "launch",
-      "projectPath": "${workspaceFolder}/NiCar.csproj",
-      "launchSettingsProfile": "http"
+      "name": "NiCar web",
+      "program": "${workspaceFolder}/server/index.js",
+      "envFile": "${workspaceFolder}/.env",
+      "console": "integratedTerminal"
     }
   ]
 }
