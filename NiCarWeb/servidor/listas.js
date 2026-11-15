@@ -29,7 +29,7 @@ export async function atenderListas(solicitud, respuesta, ruta, usuario) {
     return true;
   }
   if (ruta === '/api/listas/Venta' && solicitud.method === 'GET') {
-    exigirRol(usuario, [...administradores, 'Vendedor']);
+    exigirRol(usuario, [...administradores, 'Vendedor', 'Caja']);
     const filas = await conexion.query(
       `SELECT "IdVenta" AS id,"NumeroComprobante" || ' · USD ' ||
        to_char(coalesce("Total","PrecioVenta"-"Descuento"),'FM999,999,990.00') AS label
