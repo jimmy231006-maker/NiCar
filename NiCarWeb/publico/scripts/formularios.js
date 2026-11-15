@@ -29,6 +29,48 @@ function activarAvisosDeCampo(formulario) {
     });
   });
 }
+function configurarIdentificacion(formulario) {
+  const tipo = formulario.querySelector('[name="TipoIdentificacion"]');
+  const numero = formulario.querySelector('[name="NumeroIdentificacion"]');
+  const edad = formulario.querySelector('[name="EdadDeclarada"]');
+  if (!tipo || !numero || !edad) return;
+  const actualizar = () => {
+    const esCedula = tipo.value === 'Cedula';
+    const esPasaporte = tipo.value === 'Pasaporte';
+    const esResidencia = tipo.value === 'Residencia';
+    const requiereEdad = esPasaporte || esResidencia;
+    const etiqueta = numero.closest('.campo-formulario')?.querySelector('label');
+    const ayuda = document.querySelector('#NumeroIdentificacion-ayuda');
+    numero.pattern = esCedula
+      ? '([0-9]{13}[A-HJ-NP-Y]|[0-9]{3}-[0-9]{6}-[0-9]{4}[A-HJ-NP-Y])'
+      : esPasaporte || esResidencia ? '[A-Za-z0-9]+(-[A-Za-z0-9]+)*' : '';
+    numero.maxLength = esCedula ? 16 : 20;
+    numero.minLength = esCedula ? 14 : esResidencia ? 6 : esPasaporte ? 5 : 0;
+    numero.placeholder = esCedula ? '001-010190-0001A'
+      : esPasaporte ? 'A12345678' : esResidencia ? 'ABC123456' : 'Número de identificación';
+    numero.title = esCedula ? 'Cédula: 13 dígitos y una letra, con guiones opcionales.'
+      : esPasaporte ? 'Pasaporte: 5 a 20 letras o números; puede incluir guiones.'
+        : esResidencia ? 'Residencia: 6 a 20 letras o números; puede incluir guiones.'
+          : 'Ingresá el número completo del documento.';
+    if (etiqueta) etiqueta.textContent = esCedula ? 'Cédula nicaragüense'
+      : esPasaporte ? 'Número de pasaporte'
+        : esResidencia ? 'Número de residencia'
+          : 'Número de identificación';
+    if (ayuda) ayuda.textContent = esCedula
+      ? 'Formato: 001-010190-0001A. La fecha de nacimiento se obtiene de la cédula.'
+      : esPasaporte ? 'Formato: 5 a 20 letras o números; se permiten guiones.'
+        : esResidencia ? 'Formato: 6 a 20 letras o números; se permiten guiones.'
+          : 'Ingresá el número completo del documento.';
+    edad.type = 'number';
+    edad.min = '18';
+    edad.max = '120';
+    edad.step = '1';
+    edad.required = requiereEdad;
+    edad.closest('.campo-formulario').hidden = !requiereEdad;
+  };
+  tipo.addEventListener('change', actualizar);
+  actualizar();
+}
 export function crearCampo(clave, opciones = {}) {
   const ayuda = obtenerAyudaCampo(clave, opciones);
   const idAyuda = ayuda ? `${clave}-ayuda` : undefined;
@@ -88,6 +130,7 @@ export function crearFormulario(obtenerCampos, guardar, texto = 'Guardar') {
   const boton = crearElemento('button', { type: 'submit' }, texto);
   const elemento = crearElemento('form', {}, obtenerCampos, problema, boton);
   activarAvisosDeCampo(elemento);
+  configurarIdentificacion(elemento);
   elemento.addEventListener('submit', async (event) => {
     event.preventDefault();
     problema.textContent = '';
