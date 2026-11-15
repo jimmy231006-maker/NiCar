@@ -32,11 +32,11 @@ const permisosLectura = {
   PagoColaborador: administradores,
   CuotaCredito: administradores,
   ContratoVenta: [...administradores, 'Vendedor'],
-  PagoVenta: [...administradores, 'Vendedor'],
+  PagoVenta: [...administradores, 'Vendedor', 'Caja'],
   TipoCosto: administradores,
   CostoVehiculo: administradores,
   AdquisicionVehiculo: administradores,
-  Venta: [...administradores, 'Vendedor']
+  Venta: [...administradores, 'Vendedor', 'Caja']
 };
 import { validarRelaciones } from './relaciones.js';
 import {
