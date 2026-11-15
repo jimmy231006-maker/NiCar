@@ -30,7 +30,7 @@ const permisos = {
   },
   PagoVenta: {
     SuperAdministrador: ['r', 'c', 'd'], Administrador: ['r', 'c', 'd'],
-    Vendedor: crearConsultar
+    Vendedor: crearConsultar, Caja: crearConsultar
   },
   TipoCosto: { SuperAdministrador: completo, Administrador: completo },
   CostoVehiculo: { SuperAdministrador: completo, Administrador: completo },
@@ -38,7 +38,7 @@ const permisos = {
     SuperAdministrador: completo, Administrador: completo,
     Bodega: sinBorrado
   },
-  Venta: { SuperAdministrador: crearConsultar, Administrador: crearConsultar, Vendedor: crearConsultar }
+  Venta: { SuperAdministrador: crearConsultar, Administrador: crearConsultar, Vendedor: crearConsultar, Caja: soloLectura }
 };
 
 export function accionesModulo(rol, modulo) {
