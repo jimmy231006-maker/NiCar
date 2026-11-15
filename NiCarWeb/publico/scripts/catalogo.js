@@ -23,17 +23,17 @@ export async function mostrarCatalogo() {
   const hero = crearElemento(
     'section',
     { class: 'presentacion' },
-    crearElemento('p', { class: 'subtitulo' }, 'Veh�culos en Nicaragua'),
-    crearElemento('h1', {}, 'Tu pr�ximo camino empieza aqu�.'),
+    crearElemento('p', { class: 'subtitulo' }, 'Vehículos en Nicaragua'),
+    crearElemento('h1', {}, 'Tu próximo camino empieza aquí.'),
     crearElemento(
       'p',
       {},
-      'Explor� el cat�logo y agend� una visita para conocer el veh�culo en persona.'
+      'Explorá el cat·logo y agendá una visita para conocer el vehículo en persona.'
     ),
     crearElemento('div', { class: 'panel-filtros' },
       crearElemento('div', { class: 'filtros-busqueda' }, filtros.buscar, filtros.tipo, filtros.condicion, filtros.marca),
       crearElemento('details', { class: 'filtros-avanzados', open:true },
-        crearElemento('summary', {}, 'M�s filtros'),
+        crearElemento('summary', {}, 'Más filtros'),
         crearElemento('div', { class: 'rejilla-filtros' },
           filtros.anioDesde, filtros.anioHasta, filtros.precioDesde, filtros.precioHasta,
           filtros.kmDesde, filtros.kmHasta, filtros.cilindrajeDesde, filtros.cilindrajeHasta,
@@ -58,25 +58,25 @@ function crearFiltros(vehiculos) {
     ...opciones.map(valor => crearElemento('option', { value:String(valor) }, String(valor)))
   );
   const rango = (etiqueta, tipo, maximo) => crearElemento('input', {
-    type:tipo, min:tipo === 'number' ? '0' : undefined, max:maximo,
+    type:tipo, min:tipo === 'number' ? '0' : undefined, step:tipo === 'number' ? 'any' : undefined, max:maximo,
     placeholder:etiqueta, 'aria-label':etiqueta
   });
   const unicos = clave => [...new Set(vehiculos.map(v => v[clave]).filter(v => v !== null && v !== undefined && v !== ''))]
     .sort((a,b) => String(a).localeCompare(String(b),'es',{numeric:true}));
   return {
-    buscar:texto('Buscar','Marca, modelo, a�o o palabra clave'),
+    buscar:texto('Buscar','Marca, modelo, año o palabra clave'),
     tipo:selector('Todos los tipos',['Carro','Camioneta','Moto']),
     condicion:selector('Nuevos y usados',['Nuevo','Usado']),
     marca:selector('Todas las marcas',unicos('Marca')),
-    anioDesde:rango('A�o desde','number'), anioHasta:rango('A�o hasta','number'),
-    precioDesde:rango('Precio m�nimo en USD','number'), precioHasta:rango('Precio m�ximo en USD','number'),
-    kmDesde:rango('Kilometraje m�nimo','number'), kmHasta:rango('Kilometraje m�ximo','number'),
-    cilindrajeDesde:rango('Cilindraje m�nimo (cc)','number'), cilindrajeHasta:rango('Cilindraje m�ximo (cc)','number'),
+    anioDesde:rango('A·o desde','number'), anioHasta:rango('A·o hasta','number'),
+    precioDesde:rango('Precio mínimo en USD','number'), precioHasta:rango('Precio máximo en USD','number'),
+    kmDesde:rango('Kilometraje mínimo','number'), kmHasta:rango('Kilometraje máximo','number'),
+    cilindrajeDesde:rango('Cilindraje mínimo (cc)','number'), cilindrajeHasta:rango('Cilindraje máximo (cc)','number'),
     asientos:selector('Todos los asientos',unicos('NumeroAsientos')),
-    matricula:selector('Todos los estados de matr�cula',unicos('EstadoMatricula')),
+    matricula:selector('Todos los estados de matrícula',unicos('EstadoMatricula')),
     combustible:selector('Todos los combustibles',unicos('Combustible')),
     transmision:selector('Todas las transmisiones',unicos('Transmision')),
-    carroceria:selector('Todas las carrocer�as',unicos('TipoCarroceria')),
+    carroceria:selector('Todas las carrocerías',unicos('TipoCarroceria')),
     traccion:selector('Todas las tracciones',unicos('Traccion')),
     color:selector('Todos los colores',unicos('ColorExterior')),
     limpiar:crearElemento('button',{type:'button',class:'boton-secundario'},'Limpiar filtros')
@@ -118,9 +118,9 @@ function dibujarResultados(contenedor, vehiculos, filtros) {
       (!leer('color') || v.ColorExterior === filtros.color.value);
   });
   contenedor.replaceChildren(...filas.map(crearTarjetaVehiculo));
-  if (!filas.length) contenedor.append(crearElemento('p',{class:'sin-registros'},'No encontramos veh�culos con esos filtros.'));
+  if (!filas.length) contenedor.append(crearElemento('p',{class:'sin-registros'},'No encontramos vehículos con esos filtros.'));
   const resumen = filtros.buscar.closest('.panel-filtros')?.querySelector('.resultado-filtros');
-  if (resumen) resumen.textContent = filas.length + (filas.length === 1 ? ' veh�culo encontrado.' : ' veh�culos encontrados.');
+  if (resumen) resumen.textContent = filas.length + (filas.length === 1 ? ' vehículo encontrado.' : ' vehículos encontrados.');
 }
 
 function crearTarjetaVehiculo(vehiculo) {
@@ -128,9 +128,9 @@ function crearTarjetaVehiculo(vehiculo) {
     crearElemento('div',{class:'contenido-vehiculo'},
       crearElemento('h2',{},vehiculo.Anio+' '+vehiculo.Marca+' '+vehiculo.Modelo),
       crearElemento('p',{},vehiculo.Ubicacion||'Nicaragua'),
-      crearElemento('p',{},vehiculo.Condicion+' � '+(vehiculo.Condicion==='Nuevo'?'Sin placa':vehiculo.Kilometraje+' km')),
+      crearElemento('p',{},vehiculo.Condicion+' · '+(vehiculo.Condicion==='Nuevo'?'Sin placa':vehiculo.Kilometraje+' km')),
       crearElemento('strong',{class:'precio'},formatearPrecio(vehiculo.PrecioOferta)),
-      crearElemento('a',{class:'boton',href:'#vehiculo/'+vehiculo.IdVehiculo},'Ver veh�culo')
+      crearElemento('a',{class:'boton',href:'#vehiculo/'+vehiculo.IdVehiculo},'Ver vehículo')
     )
   );
 }
@@ -157,10 +157,10 @@ export async function mostrarVehiculo(codigo) {
     (registro) => String(registro.IdVehiculo) === codigo
   );
   if (!vehiculo) {
-    throw new Error('El veh�culo ya no est� disponible.');
+    throw new Error('El vehículo ya no est· disponible.');
   }
   mostrarTitulo(vehiculo.Anio + ' ' + vehiculo.Marca + ' ' + vehiculo.Modelo);
-  contenido.prepend(crearElemento('a', { href: '#catalogo' }, 'Volver al cat�logo'));
+  contenido.prepend(crearElemento('a', { href: '#catalogo' }, 'Volver al cat·logo'));
   const especificaciones = Object.entries(vehiculo.Caracteristicas || {});
   const panel = crearElemento(
     'section',
@@ -182,7 +182,7 @@ export async function mostrarVehiculo(codigo) {
   );
   panel.append(crearElemento('p', {}, vehiculo.Descripcion || ''),crearElemento('p', {}, vehiculo.Observaciones || ''));
   if (vehiculo.FotoReferencia) {
-    panel.append(crearElemento('p', {}, 'Foto de referencia � ' + (vehiculo.AutorImagen || ''),
+    panel.append(crearElemento('p', {}, 'Foto de referencia · ' + (vehiculo.AutorImagen || ''),
       crearElemento('a', { href:vehiculo.FuenteImagen,target:'_blank',rel:'noopener noreferrer' }, ' Ver fuente y licencia')));
   }
   if (estado.usuario?.Rol === 'Cliente') {
@@ -194,7 +194,7 @@ export async function mostrarVehiculo(codigo) {
             max: 8,
             value:estado.usuario?.Telefono || '',
             type: 'tel',
-            label: 'Tel�fono de contacto'
+            label: 'Tel·fono de contacto'
           }),
           crearCampo('Inicio', {
             required: true,
@@ -210,7 +210,7 @@ export async function mostrarVehiculo(codigo) {
             ...datos,
             IdVehiculo: Number(codigo)
           });
-          mostrarAviso('Visita agendada para el ' + cita.Inicio + '. C�digo de cita: ' + cita.IdCita + '.');
+          mostrarAviso('Visita agendada para el ' + cita.Inicio + '. C·digo de cita: ' + cita.IdCita + '.');
           if (estado.usuario?.Rol === 'Cliente') location.hash = '#citas';
         },
         'Agendar visita'
@@ -220,7 +220,7 @@ export async function mostrarVehiculo(codigo) {
       crearElemento(
         'p',
         {},
-        'Lunes a s�bado, de 8:00 a 17:00. Turnos de 45 minutos y hasta 12 citas por vendedor.'
+        'Lunes a s·bado, de 8:00 a 17:00. Turnos de 45 minutos y hasta 12 citas por vendedor.'
       )
     );
   } else if (!estado.usuario) {
@@ -237,11 +237,11 @@ export async function mostrarVehiculo(codigo) {
 function crearAvisoRegistro(codigo) {
   const volver = '#vehiculo/' + codigo;
   const guardarRetorno = () => sessionStorage.setItem('nicar-return',volver);
-  const ingreso = crearElemento('a',{class:'boton',href:'#ingresar',onClick:guardarRetorno},'Iniciar sesi�n');
+  const ingreso = crearElemento('a',{class:'boton',href:'#ingresar',onClick:guardarRetorno},'Iniciar sesi·n');
   const registro = crearElemento('a',{class:'boton',href:'#registro',onClick:guardarRetorno},'Crear cuenta de cliente');
   return crearElemento('div',{class:'aviso-cita'},
-    crearElemento('strong',{},'Para agendar una visita necesit�s una cuenta de cliente.'),
-    crearElemento('p',{},'Registrate o inici� sesi�n. Al volver a esta ficha podr�s reservar el horario.'),
+    crearElemento('strong',{},'Para agendar una visita necesit·s una cuenta de cliente.'),
+    crearElemento('p',{},'Registrate o inici· sesi·n. Al volver a esta ficha podr·s reservar el horario.'),
     crearElemento('div',{class:'acciones-cita'},ingreso,registro)
   );
 }
