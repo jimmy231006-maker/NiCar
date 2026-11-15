@@ -108,6 +108,8 @@ async function mostrarPagina() {
       await mostrarAcceso(ruta);
     } else if (ruta === 'administracion') {
       await mostrarAdministracion(codigo);
+    } else if (ruta === 'comisiones') {
+      await mostrarComisiones();
     } else if (ruta === 'citas') {
       await mostrarCitas();
     } else if (ruta === 'creditos') {
