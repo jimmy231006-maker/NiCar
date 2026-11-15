@@ -5,7 +5,7 @@ import {
   validarNombre,
   validarCorreo,
   validarContrasena,
-  obtenerNacimiento
+  validarIdentificacion
 } from './validaciones.js';
 export async function mostrarAcceso(modo) {
   mostrarTitulo(
@@ -22,7 +22,14 @@ export async function mostrarAcceso(modo) {
           crearCampo('Apellidos', { required: true, max: 100 }),
           crearCampo('Telefono', { required: true, max: 8, type: 'tel', label: 'Teléfono' }),
           crearCampo('Correo', { type: 'email', required: true, max: 50 }),
-          crearCampo('Cedula', { required: true, max: 16, label: 'Cédula nicaragüense' }),
+          crearCampo('TipoIdentificacion', { required: true, choices: [
+            { value: 'Cedula', label: 'Cédula nicaragüense' },
+            { value: 'Pasaporte', label: 'Pasaporte' },
+            { value: 'Residencia', label: 'Residencia' }
+          ] }),
+          crearCampo('NumeroIdentificacion', { required: true, max: 20, label: 'Número de identificación' }),
+          crearCampo('EdadDeclarada', { type: 'number', min: 18, max: 120, step: 1,
+            label: 'Edad (solo pasaporte o residencia)' }),
           crearCampo('Contrasena', {
             type: 'contrasena',
             required: true,
@@ -69,12 +76,12 @@ export async function mostrarAcceso(modo) {
           validarNombre(datos.Nombre);
           validarCorreo(datos.Correo);
           validarContrasena(datos.Contrasena);
-          const departamentos = await fetch('/scripts/codigos.json').then((r) =>
-            r.json()
-          );
-          if (obtenerNacimiento(datos.Cedula, departamentos).age < 18) {
-            throw new Error('Debés tener 18 años cumplidos.');
+          let departamentos = {};
+          if (datos.TipoIdentificacion === 'Cedula') {
+            departamentos = await fetch('/scripts/codigos.json').then((r) => r.json());
           }
+          validarIdentificacion(datos.TipoIdentificacion, datos.NumeroIdentificacion,
+            datos.EdadDeclarada, departamentos);
         }
         await consultarApi(
           '/autenticacion/' +
@@ -120,7 +127,7 @@ export async function mostrarAcceso(modo) {
       crearElemento(
         'p',
         {},
-        'El registro y las visitas requieren 18 años cumplidos. La edad se calcula desde tu cédula.'
+        'El registro y las visitas requieren 18 años cumplidos. Con cédula calculamos la edad; con pasaporte o residencia debés indicar tu edad.'
       )
     );
   }
