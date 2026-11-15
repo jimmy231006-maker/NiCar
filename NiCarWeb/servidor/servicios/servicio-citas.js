@@ -32,7 +32,7 @@ export class ServicioCitas {
 
   async crear(datos, usuario = null) {
     if (usuario?.Rol !== 'Cliente') {
-      rechazar('Iniciá sesi�n con una cuenta de cliente para agendar.', 401);
+      rechazar('Inici� sesi�n con una cuenta de cliente para agendar.', 401);
     }
     validaciones.validarCita(datos);
     const vehiculo = await this.#baseDatos.query(
@@ -41,16 +41,24 @@ export class ServicioCitas {
       [Number(datos.IdVehiculo)]
     );
     if (!vehiculo.rows[0]?.Activo || vehiculo.rows[0].Estado !== 'Disponible') {
-      rechazar('El vehículo ya no está disponible.');
+      rechazar('El veh�culo ya no est� disponible.');
     }
     const cuenta = await this.#baseDatos.query(
-      `SELECT "NombreCompleto","Cedula","Telefono" FROM nicar."Usuario" u
+      `SELECT "NombreCompleto","TipoDocumento","NumeroDocumento","EdadDeclarada","Telefono"
+       FROM nicar."Usuario" u
        JOIN nicar."Cliente" c ON c."IdCliente"=u."IdCliente"
        WHERE u."IdUsuario"=$1 AND u."Rol"='Cliente' AND u."Activo" AND c."Activo"`,
       [usuario.IdUsuario]
     );
-    if (!cuenta.rows[0]) rechazar('La cuenta de cliente no está activa.', 403);
-    if (!cuenta.rows[0].Cedula || validaciones.obtenerNacimiento(cuenta.rows[0].Cedula).age < 18) {
+    if (!cuenta.rows[0]) rechazar('La cuenta de cliente no est� activa.', 403);
+    let identificacion;
+    try {
+      identificacion = validaciones.validarIdentificacion(
+        cuenta.rows[0].TipoDocumento,
+        cuenta.rows[0].NumeroDocumento,
+        cuenta.rows[0].EdadDeclarada
+      );
+    } catch {
       rechazar('Para agendar se requiere una cuenta de cliente activa y mayor de edad.', 403);
     }
     validaciones.validarTelefono(datos.Telefono);
@@ -60,7 +68,7 @@ export class ServicioCitas {
        VALUES ($1,$2,$3,$4,$5,$6,1) RETURNING "IdCita","Inicio","IdVendedor"`,
       [Number(datos.IdVehiculo),cuenta.rows[0].NombreCompleto,datos.Telefono,
         datos.Inicio.replace('T',' '),usuario.IdUsuario,
-        validaciones.obtenerNacimiento(cuenta.rows[0].Cedula).birth]
+        identificacion.birth]
     );
     return resultado.rows[0];
   }
@@ -111,14 +119,14 @@ export class ServicioCitas {
     if (!cita || (!clientePropio && !this.#puedeGestionar(usuario,cita))) {
       rechazar('Cita no encontrada.',404);
     }
-    if (cita.Estado !== 'Pendiente') rechazar('La cita ya está cerrada.');
+    if (cita.Estado !== 'Pendiente') rechazar('La cita ya est� cerrada.');
     if (cancelar) {
       const esAdministrador = administradores.includes(usuario.Rol);
       if (esAdministrador && !String(datos.MotivoCancelacion || '').trim()) {
-        rechazar('Indicá el motivo de la cancelación.');
+        rechazar('Indic� el motivo de la cancelaci�n.');
       }
       if (!esAdministrador && usuario.Rol !== 'Cliente') {
-        rechazar('Solo administración puede cancelar la cita de un cliente.');
+        rechazar('Solo administraci�n puede cancelar la cita de un cliente.');
       }
       const motivo = esAdministrador
         ? String(datos.MotivoCancelacion).trim()
@@ -130,7 +138,7 @@ export class ServicioCitas {
         [motivo, usuario.IdUsuario, !esAdministrador, codigo]
       );
     } else if (datos.Estado === 'Atendida' && personal.includes(usuario.Rol)) {
-      if (new Date(cita.Inicio+'-06:00').getTime()>Date.now()) rechazar('La visita todavía no comienza.');
+      if (new Date(cita.Inicio+'-06:00').getTime()>Date.now()) rechazar('La visita todav�a no comienza.');
       await this.#baseDatos.query('UPDATE nicar."Cita" SET "Estado"=\'Atendida\' WHERE "IdCita"=$1',[codigo]);
     } else {
       validaciones.validarCita({ ...datos,IdVehiculo:cita.IdVehiculo });
