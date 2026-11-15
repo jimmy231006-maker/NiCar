@@ -118,6 +118,16 @@ p {
   flex: 1;
   min-width: 0;
 }
+.panel-filtros { display:grid; gap:12px; margin-top:18px; color:#fff; }
+.filtros-busqueda, .rejilla-filtros { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+.filtros-busqueda { grid-template-columns:2fr repeat(3,minmax(130px,1fr)); }
+.panel-filtros input, .panel-filtros select { width:100%; min-width:0; min-height:42px; padding:9px 10px; border:1px solid #c8d4da; border-radius:6px; background:#fff; color:#182a36; }
+.filtros-avanzados { padding:12px; border:1px solid #536a75; border-radius:8px; }
+.filtros-avanzados summary { cursor:pointer; font-weight:700; }
+.rejilla-filtros { margin-top:12px; }
+.acciones-filtros { display:flex; justify-content:flex-end; }
+.panel-filtros .boton-secundario { background:#fff; color:#183342; border:1px solid #b8c7ce; }
+.resultado-filtros { margin:0; font-size:14px; }
 .cuadricula {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
@@ -190,6 +200,8 @@ p {
   .busqueda button {
     width: 100%;
   }
+  .filtros-busqueda, .rejilla-filtros { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .filtros-busqueda input { grid-column:1 / -1; }
   .cuadricula {
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
     gap: 16px;
@@ -212,4 +224,7 @@ p {
   .precio {
     font-size: 22px;
   }
+  .filtros-busqueda, .rejilla-filtros { grid-template-columns:1fr; }
+  .filtros-busqueda input { grid-column:auto; }
 }
+
