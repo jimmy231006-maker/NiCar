@@ -144,14 +144,19 @@ export async function mostrarVehiculo(codigo) {
     panel.append(crearElemento('p', {}, 'Foto de referencia · ' + (vehiculo.AutorImagen || ''),
       crearElemento('a', { href:vehiculo.FuenteImagen,target:'_blank',rel:'noopener noreferrer' }, ' Ver fuente y licencia')));
   }
-  if (estado.usuario?.Rol === 'Cliente') {
+  if (estado.usuario?.Rol === 'Cliente' || !estado.usuario) {
+    const camposCliente = estado.usuario ? [] : [
+      crearCampo('Nombre', { required:true, max:100, label:'Nombre y apellido' }),
+      crearCampo('Cedula', { required:true, max:16, label:'Cédula nicaragüense (para verificar mayoría de edad)' })
+    ];
     panel.append(
       crearFormulario(
         [
+          ...camposCliente,
           crearCampo('Telefono', {
             required: true,
             max: 8,
-            value:estado.usuario.Telefono,
+            value:estado.usuario?.Telefono || '',
             type: 'tel',
             label: 'Teléfono de contacto'
           }),
@@ -165,14 +170,14 @@ export async function mostrarVehiculo(codigo) {
         ],
         async (datos) => {
           validarTelefono(datos.Telefono);
-          await consultarApi('/citas', 'POST', {
+          const cita = await consultarApi('/citas', 'POST', {
             ...datos,
             IdVehiculo: Number(codigo)
           });
-          mostrarAviso('Visita agendada. Podés verla en Mis citas.');
-          location.hash = '#citas';
+          mostrarAviso('Visita agendada para el ' + cita.Inicio + '. Código de cita: ' + cita.IdCita + '.');
+          if (estado.usuario?.Rol === 'Cliente') location.hash = '#citas';
         },
-        'Agendar visita'
+        estado.usuario ? 'Agendar visita' : 'Agendar sin crear cuenta'
       )
     );
     panel.append(
@@ -180,18 +185,6 @@ export async function mostrarVehiculo(codigo) {
         'p',
         {},
         'Lunes a sábado, de 8:00 a 17:00. Turnos de 45 minutos y hasta 12 citas por vendedor.'
-      )
-    );
-  } else if (!estado.usuario) {
-    panel.append(
-      crearElemento(
-        'a',
-        {
-          class: 'boton',
-          href: '#ingresar',
-          onClick: () => sessionStorage.setItem('nicar-return', '#vehiculo/' + codigo)
-        },
-        'Iniciar sesión para agendar'
       )
     );
   }

@@ -33,8 +33,8 @@ export async function atenderUsuarios(solicitud, respuesta, ruta, usuario) {
   exigirRol(usuario, administradores);
   const roles =
     usuario.Rol === 'SuperAdministrador'
-      ? ['Administrador', 'Vendedor', 'Recepcionista', 'Bodega', 'Cliente']
-      : ['Vendedor', 'Recepcionista', 'Bodega', 'Cliente'];
+      ? ['Administrador', 'Vendedor', 'Recepcionista', 'Bodega']
+      : ['Vendedor', 'Recepcionista', 'Bodega'];
   if (solicitud.method === 'GET') {
     responderJson(
       respuesta,
@@ -84,14 +84,49 @@ export async function atenderUsuarios(solicitud, respuesta, ruta, usuario) {
   } else if (solicitud.method === 'PUT') {
     const codigo = Number(ruta.split('/').pop());
     const datos = await leerFormulario(solicitud);
-    if (Number(datos.PorcentajeComision) !== 5) rechazar('La comisión es fija en 5%.');
-    const porcentaje = 5;
-    const resultado = await conexion.query(
-      'UPDATE nicar."Usuario" SET "PorcentajeComision"=$1 WHERE "IdUsuario"=$2 AND "Rol"=ANY($3) RETURNING "IdUsuario"',
-      [porcentaje, codigo, roles]
+    if (!Number.isSafeInteger(codigo) || codigo === usuario.IdUsuario) {
+      rechazar('No podés editar tu propia cuenta desde administración.');
+    }
+    const destino = await conexion.query(
+      'SELECT "Rol" FROM nicar."Usuario" WHERE "IdUsuario"=$1 AND "Rol"=ANY($2)',
+      [codigo, roles]
     );
-    if (!resultado.rows.length) rechazar('Cuenta no encontrada o sin permiso.', 404);
-    responderJson(respuesta, { message: 'Porcentaje de comisión actualizado.' });
+    if (!destino.rows[0]) rechazar('Cuenta no encontrada o sin permiso.', 404);
+    const rolDestino = destino.rows[0].Rol;
+    if (usuario.Rol !== 'SuperAdministrador' && rolDestino === 'Administrador') {
+      rechazar('Solo el superadministrador puede modificar cuentas administrativas.', 403);
+    }
+    if (datos.Nombre !== undefined) {
+      validarNombre(datos.Nombre);
+      if (datos.Nombre.length > 100) rechazar('El nombre no puede superar 100 caracteres.');
+    }
+    if (datos.Correo !== undefined) {
+      validarCorreo(datos.Correo);
+      if (datos.Correo.length > 50) rechazar('El correo no puede superar 50 caracteres.');
+    }
+    if (datos.Rol !== undefined && (!roles.includes(datos.Rol) || datos.Rol === 'SuperAdministrador')) {
+      rechazar('No podés asignar ese rol.');
+    }
+    if (datos.PorcentajeComision !== undefined && Number(datos.PorcentajeComision) !== 5) {
+      rechazar('La comisión es fija en 5%.');
+    }
+    const campos = [];
+    const valores = [];
+    for (const [clave, columna] of [['Nombre','NombreCompleto'],['Correo','NombreUsuario'],['Rol','Rol']]) {
+      if (datos[clave] !== undefined) {
+        valores.push(String(datos[clave]).trim());
+        campos.push(`"${columna}"=$${valores.length}`);
+      }
+    }
+    if (!campos.length) rechazar('Indicá al menos un dato que quieras actualizar.');
+    valores.push(codigo, roles);
+    const resultado = await conexion.query(
+      `UPDATE nicar."Usuario" SET ${campos.join(', ')}
+       WHERE "IdUsuario"=$${valores.length - 1} AND "Rol"=ANY($${valores.length})
+       RETURNING "IdUsuario"`, valores
+    );
+    if (!resultado.rows.length) rechazar('La cuenta cambió o ya no está disponible.', 409);
+    responderJson(respuesta, { message: 'Datos de la cuenta actualizados.' });
   } else if (solicitud.method === 'DELETE') {
     const codigo = Number(ruta.split('/').pop());
     if (codigo === usuario.IdUsuario) {
