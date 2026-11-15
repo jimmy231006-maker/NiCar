@@ -122,6 +122,8 @@ button:focus-visible {
   border-radius: 0.75rem;
   background: #f4f8fa;
 }
+.aviso-cita { margin:18px 0; padding:16px; border:1px solid #cbd9df; border-radius:8px; background:#f4f8fa; }
+.acciones-cita { display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
 
 .lista-caracteristicas {
   display: grid;
@@ -136,3 +138,4 @@ button:focus-visible {
 .lista-caracteristicas dd {
   margin: 0;
 }
+
