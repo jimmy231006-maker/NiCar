@@ -17,8 +17,7 @@ import {
 import {
   obtenerCampos,
   opciones,
-  validarDatos,
-  obtenerEdad
+  validarDatos
 } from './validaciones.js';
 import { fechaDeHoy } from '../publico/scripts/validaciones.js';
 const permisosLectura = {
@@ -49,7 +48,7 @@ import {
 export async function atenderAdministracion(solicitud, respuesta, ruta, usuario) {
   if (ruta === '/api/modulos' && solicitud.method === 'GET') {
     if (!usuario) {
-      rechazar('Iniciá sesión.', 401);
+      rechazar('Inici� sesi�n.', 401);
     }
     responderJson(
       respuesta,
@@ -93,10 +92,10 @@ export async function atenderAdministracion(solicitud, respuesta, ruta, usuario)
     if (solicitud.method === 'POST') {
       const entrada = await leerFormulario(solicitud);
       const pago = await ejecutarTransaccion(db => new ServicioPagoColaborador(db).registrar(entrada,usuario));
-      responderJson(respuesta,{ ...pago, message:'Pago guardado. El desembolso se efectúa fuera de NiCar.' },201);
+      responderJson(respuesta,{ ...pago, message:'Pago guardado. El desembolso se efect�a fuera de NiCar.' },201);
       return true;
     }
-    rechazar('Los pagos registrados no se editan ni se borran; conservá el historial.',405);
+    rechazar('Los pagos registrados no se editan ni se borran; conserv� el historial.',405);
   }
   const repositorio = crearRepositorio(conexion, tabla);
   if (solicitud.method === 'GET') {
@@ -127,7 +126,7 @@ export async function atenderAdministracion(solicitud, respuesta, ruta, usuario)
   if (!accion) return false;
   exigirAccionModulo(usuario, tabla, accion);
   if (tabla === 'CuotaCredito') {
-    rechazar('La tabla de amortización bancaria es de consulta y no se modifica desde este módulo.', 405);
+    rechazar('La tabla de amortizaci�n bancaria es de consulta y no se modifica desde este m�dulo.', 405);
   }
   if (tabla === 'PagoVenta' && solicitud.method === 'PUT') {
     rechazar('Los pagos de una venta se anulan conservando su historial.');
@@ -138,10 +137,10 @@ export async function atenderAdministracion(solicitud, respuesta, ruta, usuario)
   }
   if (solicitud.method === 'DELETE') {
     if (!codigo || tabla === 'Venta') {
-      rechazar('Esta operación requiere conservar el historial.');
+      rechazar('Esta operaci�n requiere conservar el historial.');
     }
     if (['PagoVenta','ContratoVenta'].includes(tabla) && !administradores.includes(usuario.Rol)) {
-      rechazar('Solo administración puede anular contratos o pagos de ventas.', 403);
+      rechazar('Solo administraci�n puede anular contratos o pagos de ventas.', 403);
     }
     await repositorio.cambiarEstado(codigo);
     responderJson(respuesta, { message: 'Estado actualizado.' });
@@ -154,7 +153,7 @@ export async function atenderAdministracion(solicitud, respuesta, ruta, usuario)
     (solicitud.method === 'PUT' && !codigo) ||
     (solicitud.method === 'POST' && codigo)
   ) {
-    rechazar('Ruta inválida.');
+    rechazar('Ruta inv�lida.');
   }
   if (tabla === 'Venta' && solicitud.method === 'PUT') {
     rechazar('Las ventas registradas conservan su comprobante.');
@@ -171,7 +170,7 @@ export async function atenderAdministracion(solicitud, respuesta, ruta, usuario)
   const datos = validarDatos(tabla, formulario, solicitud.method === 'POST');
   if (tabla === 'ContratoVenta') {
     datos.Estado = formulario.Estado || 'Borrador';
-    if (!['Borrador','Firmado'].includes(datos.Estado)) rechazar('Seleccioná un estado válido para el contrato.');
+    if (!['Borrador','Firmado'].includes(datos.Estado)) rechazar('Seleccion� un estado v�lido para el contrato.');
   }
   if (['ContratoVenta','PagoVenta'].includes(tabla) && solicitud.method === 'POST') {
     datos.RegistradoPor = usuario.IdUsuario;
@@ -193,7 +192,7 @@ export async function atenderAdministracion(solicitud, respuesta, ruta, usuario)
            ) AS permitido`,
           [codigo, usuario.IdUsuario]
         );
-        if (!acceso.rows[0]?.permitido) rechazar('Solo podés actualizar clientes que atendés.', 403);
+        if (!acceso.rows[0]?.permitido) rechazar('Solo pod�s actualizar clientes que atend�s.', 403);
       }
     } else {
       if (['Cliente', 'Proveedor', 'Vehiculo'].includes(tabla)) {
@@ -207,9 +206,9 @@ export async function atenderAdministracion(solicitud, respuesta, ruta, usuario)
          WHERE "IdVenta"=$1 FOR UPDATE`, [datos.IdVenta]
       );
       const venta = ventaRelacionada.rows[0];
-      if (!venta?.Activa) rechazar('La venta relacionada no está activa.');
+      if (!venta?.Activa) rechazar('La venta relacionada no est� activa.');
       if (usuario.Rol === 'Vendedor' && venta.IdVendedor !== usuario.IdUsuario) {
-        rechazar('Solo podés gestionar contratos y pagos de tus propias ventas.', 403);
+        rechazar('Solo pod�s gestionar contratos y pagos de tus propias ventas.', 403);
       }
       if (tabla === 'PagoVenta') {
         const acumulado = await baseDatos.query(
@@ -222,13 +221,13 @@ export async function atenderAdministracion(solicitud, respuesta, ruta, usuario)
           ? Number(datos.Monto)
           : Number(datos.Monto) / Number(datos.TasaCambio || 36.60);
         if (Number(acumulado.rows[0].total) + importeUSD > Number(venta.Total) + 0.005) {
-          rechazar('El pago superaría el total de la venta.');
+          rechazar('El pago superar�a el total de la venta.');
         }
         if (datos.MetodoPago !== 'Efectivo' && !String(datos.Referencia || '').trim()) {
           rechazar('Transferencias, tarjetas y cheques requieren referencia.');
         }
         if (!['Efectivo','Transferencia','Tarjeta','Cheque'].includes(datos.MetodoPago)) {
-          rechazar('Seleccioná una forma de pago válida para este registro.');
+          rechazar('Seleccion� una forma de pago v�lida para este registro.');
         }
         datos.TasaCambio = datos.TasaCambio || 36.60;
       }
@@ -242,7 +241,7 @@ export async function atenderAdministracion(solicitud, respuesta, ruta, usuario)
         'SELECT "PlazoMinimoMeses","PlazoMaximoMeses" FROM nicar."Financiera" WHERE "IdFinanciera"=$1 AND "Activo" FOR SHARE',
         [condicionesCredito.IdFinanciera]
       );
-      if (!financiera.rows[0]) rechazar('Seleccioná una financiera activa.');
+      if (!financiera.rows[0]) rechazar('Seleccion� una financiera activa.');
       Object.assign(condicionesCredito, financiera.rows[0]);
       const precioFinanciado = Number(validaciones.centavos(datos.PrecioVenta) -
         validaciones.centavos(datos.Descuento)) / 100;
@@ -254,21 +253,18 @@ export async function atenderAdministracion(solicitud, respuesta, ruta, usuario)
         [datos.IdVehiculo]
       );
       if (vehiculo.rows[0].Estado !== 'Disponible') {
-        rechazar('El vehículo ya no está disponible.');
+        rechazar('El veh�culo ya no est� disponible.');
       }
       const cliente = await baseDatos.query(
         'SELECT * FROM nicar."Cliente" WHERE "IdCliente"=$1',
         [datos.IdCliente]
       );
       if (cliente.rows[0].TipoCliente === 'Natural') {
-        if (cliente.rows[0].TipoIdentificacion !== 'Cedula') {
-          rechazar(
-            'Verificá la mayoría de edad del cliente mediante su cédula antes de vender.'
-          );
-        }
-        if (obtenerEdad(cliente.rows[0].NumeroIdentificacion) < 18) {
-          rechazar('La venta directa requiere mayoría de edad.');
-        }
+        validaciones.validarIdentificacion(
+          cliente.rows[0].TipoIdentificacion,
+          cliente.rows[0].NumeroIdentificacion,
+          cliente.rows[0].EdadDeclarada
+        );
       }
       const pago = crearPago(datos);
       Object.assign(datos, pago.obtenerDetalle());
@@ -299,3 +295,4 @@ export async function atenderAdministracion(solicitud, respuesta, ruta, usuario)
   responderJson(respuesta, resultado, solicitud.method === 'POST' ? 201 : 200);
   return true;
 }
+
