@@ -12,7 +12,7 @@ npm install
 npm start
 ```
 
-Completa `DATABASE_URL` en `.env` con la cadena del **Session Pooler** de Supabase. Para uso local, define `APP_ORIGIN=http://localhost:3000`. Después visita http://localhost:3000. No subas `.env`, contraseñas ni llaves a GitHub.
+Completa `DATABASE_URL` en `.env` con la cadena del **Session Pooler** de Supabase. Para validar el certificado TLS de extremo a extremo, copia el certificado raíz de Supabase en `DATABASE_SSL_CERT` (PEM). Si no se configura, Node.js mantiene TLS cifrado pero omite la verificación del certificado; úsalo solo mientras terminas la configuración y antes de manejar datos reales agrega el certificado raíz. Para uso local, define `APP_ORIGIN=http://localhost:3000`. Después visita http://localhost:3000. No subas `.env`, contraseñas ni llaves a GitHub.
 
 ## Supabase
 
@@ -53,7 +53,7 @@ El registro público de un cliente guarda la ficha y la cuenta vinculada en una 
 
 ## Render
 
-El `render.yaml` de la raíz del repositorio ya configura el servicio web `nicar` y usa `NiCarWeb` como directorio raíz. Render necesita las variables privadas `DATABASE_URL` y `APP_ORIGIN`; el valor de `APP_ORIGIN` debe ser exactamente la URL del servicio, por ejemplo `https://nicar.onrender.com`, sin una barra al final. El servicio usa `npm install --omit=dev`, `npm start` y revisa `/api/health`.
+El `render.yaml` de la raíz del repositorio ya configura el servicio web `nicar` y usa `NiCarWeb` como directorio raíz. Render necesita las variables privadas `DATABASE_URL` y `APP_ORIGIN`; puedes añadir `DATABASE_SSL_CERT` con el certificado raíz PEM de Supabase para verificar la identidad del servidor. El valor de `APP_ORIGIN` debe ser exactamente la URL del servicio, por ejemplo `https://nicar.onrender.com`, sin una barra al final. El servicio usa `npm install --omit=dev`, `npm start` y revisa `/api/health`.
 
 ## Organización
 

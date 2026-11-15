@@ -1,7 +1,13 @@
 import pg from 'pg';
+const certificadoSupabase = process.env.DATABASE_SSL_CERT?.replace(/\\n/g, '\n');
 export const conexion = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: true } : undefined,
+  ssl: process.env.NODE_ENV === 'production'
+    ? {
+        rejectUnauthorized: Boolean(certificadoSupabase),
+        ...(certificadoSupabase ? { ca: certificadoSupabase } : {})
+      }
+    : undefined,
   max: 5,
   connectionTimeoutMillis: 10000
 });
