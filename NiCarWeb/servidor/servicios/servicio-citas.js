@@ -32,7 +32,7 @@ export class ServicioCitas {
 
   async crear(datos, usuario = null) {
     if (usuario?.Rol !== 'Cliente') {
-      rechazar('Inici� sesi�n con una cuenta de cliente para agendar.', 401);
+      rechazar('Iniciá sesi�n con una cuenta de cliente para agendar.', 401);
     }
     validaciones.validarCita(datos);
     const vehiculo = await this.#baseDatos.query(
@@ -41,7 +41,7 @@ export class ServicioCitas {
       [Number(datos.IdVehiculo)]
     );
     if (!vehiculo.rows[0]?.Activo || vehiculo.rows[0].Estado !== 'Disponible') {
-      rechazar('El veh�culo ya no est� disponible.');
+      rechazar('El vehículo ya no está disponible.');
     }
     const cuenta = await this.#baseDatos.query(
       `SELECT "NombreCompleto","Cedula","Telefono" FROM nicar."Usuario" u
@@ -49,7 +49,7 @@ export class ServicioCitas {
        WHERE u."IdUsuario"=$1 AND u."Rol"='Cliente' AND u."Activo" AND c."Activo"`,
       [usuario.IdUsuario]
     );
-    if (!cuenta.rows[0]) rechazar('La cuenta de cliente no est� activa.', 403);
+    if (!cuenta.rows[0]) rechazar('La cuenta de cliente no está activa.', 403);
     if (!cuenta.rows[0].Cedula || validaciones.obtenerNacimiento(cuenta.rows[0].Cedula).age < 18) {
       rechazar('Para agendar se requiere una cuenta de cliente activa y mayor de edad.', 403);
     }
@@ -111,14 +111,14 @@ export class ServicioCitas {
     if (!cita || (!clientePropio && !this.#puedeGestionar(usuario,cita))) {
       rechazar('Cita no encontrada.',404);
     }
-    if (cita.Estado !== 'Pendiente') rechazar('La cita ya est� cerrada.');
+    if (cita.Estado !== 'Pendiente') rechazar('La cita ya está cerrada.');
     if (cancelar) {
       const esAdministrador = administradores.includes(usuario.Rol);
       if (esAdministrador && !String(datos.MotivoCancelacion || '').trim()) {
-        rechazar('Indic� el motivo de la cancelaci�n.');
+        rechazar('Indicá el motivo de la cancelación.');
       }
       if (!esAdministrador && usuario.Rol !== 'Cliente') {
-        rechazar('Solo administraci�n puede cancelar la cita de un cliente.');
+        rechazar('Solo administración puede cancelar la cita de un cliente.');
       }
       const motivo = esAdministrador
         ? String(datos.MotivoCancelacion).trim()
@@ -130,7 +130,7 @@ export class ServicioCitas {
         [motivo, usuario.IdUsuario, !esAdministrador, codigo]
       );
     } else if (datos.Estado === 'Atendida' && personal.includes(usuario.Rol)) {
-      if (new Date(cita.Inicio+'-06:00').getTime()>Date.now()) rechazar('La visita todav�a no comienza.');
+      if (new Date(cita.Inicio+'-06:00').getTime()>Date.now()) rechazar('La visita todavía no comienza.');
       await this.#baseDatos.query('UPDATE nicar."Cita" SET "Estado"=\'Atendida\' WHERE "IdCita"=$1',[codigo]);
     } else {
       validaciones.validarCita({ ...datos,IdVehiculo:cita.IdVehiculo });
