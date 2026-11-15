@@ -21,7 +21,7 @@ export async function atenderCitas(solicitud, respuesta, ruta, usuario) {
   if (aviso && solicitud.method === 'PUT') {
     exigirRol(usuario, ['Cliente']);
     await new ServicioCitas(conexion).marcarAvisoLeido(aviso[1], usuario);
-    responderJson(respuesta, { message: 'Aviso le�do.' });
+    responderJson(respuesta, { message: 'Aviso leído.' });
     return true;
   }
   const coincidencia = /^\/api\/citas(?:\/(\d+)(\/cliente)?)?$/.exec(ruta);
