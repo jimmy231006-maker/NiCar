@@ -9,14 +9,16 @@ export class ServicioClientes {
   }
 
   async registrar(datos) {
-    const nacimiento = validaciones.obtenerNacimiento(datos.Cedula);
+    const identificacion = validaciones.validarIdentificacion(
+      datos.TipoIdentificacion, datos.NumeroIdentificacion, datos.EdadDeclarada
+    );
     const resultado = await this.#baseDatos.query(
       `INSERT INTO nicar."Cliente" ("TipoCliente","Nombres","Apellidos","TipoIdentificacion",
-        "NumeroIdentificacion","Telefono","Correo","FechaRegistro","Activo")
-       VALUES ('Natural',$1,$2,'Cedula',$3,$4,$5,now() AT TIME ZONE 'America/Managua',true)
+        "NumeroIdentificacion","EdadDeclarada","Telefono","Correo","FechaRegistro","Activo")
+       VALUES ('Natural',$1,$2,$3,$4,$5,$6,$7,now() AT TIME ZONE 'America/Managua',true)
        RETURNING "IdCliente"`,
-      [datos.Nombres.trim(),datos.Apellidos.trim(),nacimiento.value,
-        datos.Telefono,datos.Correo.trim().toLowerCase()]
+      [datos.Nombres.trim(),datos.Apellidos.trim(),identificacion.tipo,identificacion.value,
+        identificacion.age,datos.Telefono,datos.Correo.trim().toLowerCase()]
     );
     return resultado.rows[0].IdCliente;
   }
@@ -27,16 +29,18 @@ export class ServicioClientes {
       [cliente.IdCliente]
     );
     if (!resultado.rows.length) return;
-    if (cliente.TipoCliente !== 'Natural' || cliente.TipoIdentificacion !== 'Cedula') {
-      rechazar('La ficha vinculada a una cuenta personal requiere cédula y nombres.');
-    }
-    const nacimiento = validaciones.obtenerNacimiento(cliente.NumeroIdentificacion);
-    if (nacimiento.age < 18) rechazar('La cuenta de cliente requiere mayoría de edad.');
+    if (cliente.TipoCliente !== 'Natural') rechazar('La cuenta personal requiere un cliente natural.');
+    const identificacion = validaciones.validarIdentificacion(
+      cliente.TipoIdentificacion, cliente.NumeroIdentificacion, cliente.EdadDeclarada
+    );
     await this.#baseDatos.query(
       `UPDATE nicar."Usuario" SET "NombreCompleto"=$1,"NombreUsuario"=$2,
-       "Cedula"=$3,"Nacimiento"=$4,"Activo"=$5 WHERE "IdCliente"=$6`,
+       "TipoDocumento"=$3,"NumeroDocumento"=$4,"EdadDeclarada"=$5,
+       "Cedula"=$6,"Nacimiento"=$7,"Activo"=$8 WHERE "IdCliente"=$9`,
       [[cliente.Nombres,cliente.Apellidos].join(' '),cliente.Correo,
-        nacimiento.value,nacimiento.birth,cliente.Activo,cliente.IdCliente]
+        identificacion.tipo,identificacion.value,identificacion.age,
+        identificacion.tipo === 'Cedula' ? identificacion.value : null,
+        identificacion.birth,cliente.Activo,cliente.IdCliente]
     );
   }
 }
