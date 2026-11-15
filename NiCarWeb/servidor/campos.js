@@ -1,7 +1,7 @@
 
 export const opciones = {
   TipoCliente: ['Natural', 'Juridica'],
-  TipoIdentificacion: ['Cedula', 'RUC', 'Pasaporte', 'Otro'],
+  TipoIdentificacion: ['Cedula', 'RUC', 'Pasaporte', 'Residencia'],
   TipoProveedor: ['Empresa', 'Persona'],
   TipoFinanciamiento: ['Externo'],
   TipoContrato: ['Indefinido','Plazo fijo','Proyecto'],
@@ -11,10 +11,10 @@ export const opciones = {
   Condicion: ['Nuevo', 'Usado'],
   Moneda: ['USD', 'NIO'],
   MetodoPago: ['Efectivo', 'Transferencia', 'Tarjeta', 'Financiamiento'],
-  Transmision: ['Automática', 'Manual', 'CVT'],
+  Transmision: ['Autom�tica', 'Manual', 'CVT'],
   Traccion: ['4x2', '4x4', 'AWD', 'FWD', 'RWD'],
-  Combustible: ['Gasolina', 'Diésel', 'Híbrido', 'Eléctrico', 'Híbrido enchufable'],
-  TipoCarroceria: ['Sedán', 'SUV', 'Pickup', 'Hatchback', 'Camioneta', 'Coupe', 'Van', 'Motocicleta']
+  Combustible: ['Gasolina', 'Di�sel', 'H�brido', 'El�ctrico', 'H�brido enchufable'],
+  TipoCarroceria: ['Sed�n', 'SUV', 'Pickup', 'Hatchback', 'Camioneta', 'Coupe', 'Van', 'Motocicleta']
 };
 export const camposOcultos = [
   'FechaRegistro',
@@ -27,3 +27,4 @@ export const camposOcultos = [
   'RedondeoEfectivoNIO', 'CambioNIO', 'DetalleCambio', 'ComisionUSD', 'PorcentajeComision',
   'TasaCambio', 'MontoNIO', 'MontoBrutoNIO', 'MontoNetoNIO', 'DeduccionINSSNIO', 'RetencionIRNIO', 'ComisionUSD', 'TasaCambio', 'RegistradoPor', 'Estado'
 ];
+
