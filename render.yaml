@@ -3,6 +3,7 @@ services:
     name: nicar
     runtime: node
     plan: free
+    rootDir: NiCarWeb
     buildCommand: npm install --omit=dev
     startCommand: npm start
     healthCheckPath: /api/health
