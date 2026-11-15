@@ -55,11 +55,11 @@ export async function atenderAutenticacion(solicitud, respuesta, ruta, usuario) 
       ]
     );
     });
-    responderJson(respuesta, { message: 'Cuenta creada. Inici� sesi�n.' }, 201);
+    responderJson(respuesta, { message: 'Cuenta creada. Iniciá sesión.' }, 201);
   } else if (ruta.endsWith('/ingresar')) {
     validarCorreo(datos.Correo);
     if (typeof datos.Contrasena !== 'string' || datos.Contrasena.length > 100) {
-      rechazar('Revis� tus credenciales.');
+      rechazar('Revisá tus credenciales.');
     }
     const resultado = await ejecutarTransaccion(async (baseDatos) => {
       const { rows: filas } = await baseDatos.query(
@@ -89,12 +89,12 @@ export async function atenderAutenticacion(solicitud, respuesta, ruta, usuario) 
           [datos.Correo.trim()]
         );
         const restantes = accountRestantes(cuenta);
-        const mensaje = !cuenta ? 'El usuario no est� registrado.'
-          : !cuenta.Activo ? 'La cuenta est� desactivada.'
-          : esSuperAdministrador ? 'El usuario es correcto, pero la contrase�a no coincide.'
-          : bloqueada ? 'La cuenta est� bloqueada. Esper� 15 minutos.'
-          : restantes === 0 ? 'El usuario es correcto. Se agotaron los cinco intentos. Esper� 15 minutos.'
-          : 'El usuario es correcto, pero la contrase�a no. Te quedan ' + restantes + ' intentos.';
+        const mensaje = !cuenta ? 'El usuario no está registrado.'
+          : !cuenta.Activo ? 'La cuenta está desactivada.'
+          : esSuperAdministrador ? 'El usuario es correcto, pero la contraseña no coincide.'
+          : bloqueada ? 'La cuenta está bloqueada. Esperá 15 minutos.'
+          : restantes === 0 ? 'El usuario es correcto. Se agotaron los cinco intentos. Esperá 15 minutos.'
+          : 'El usuario es correcto, pero la contraseña no. Te quedan ' + restantes + ' intentos.';
         return { mensaje };
       }
       await baseDatos.query(
@@ -102,7 +102,7 @@ export async function atenderAutenticacion(solicitud, respuesta, ruta, usuario) 
         [cuenta.IdUsuario]
       );
       await baseDatos.query(
-        `INSERT INTO nicar."LogAcceso" ("IdUsuario","NombreIngresado","Evento") VALUES ($1,$2,'Inicio de sesi�n')`,
+        `INSERT INTO nicar."LogAcceso" ("IdUsuario","NombreIngresado","Evento") VALUES ($1,$2,'Inicio de sesión')`,
         [cuenta.IdUsuario, cuenta.NombreUsuario]
       );
       const token = crearToken();
@@ -117,7 +117,7 @@ export async function atenderAutenticacion(solicitud, respuesta, ruta, usuario) 
       rechazar(resultado.mensaje,401);
     }
     guardarCookie(respuesta, resultado.token);
-    responderJson(respuesta, { message: 'Sesi�n iniciada.' });
+    responderJson(respuesta, { message: 'Sesión iniciada.' });
   } else if (ruta.endsWith('/salir')) {
     const token = /nicar=([a-f0-9]{64})/.exec(solicitud.headers.cookie || '')?.[1];
     if (token) {
@@ -126,10 +126,10 @@ export async function atenderAutenticacion(solicitud, respuesta, ruta, usuario) 
       ]);
     }
     guardarCookie(respuesta, '', 0);
-    responderJson(respuesta, { message: 'Sesi�n cerrada.' });
+    responderJson(respuesta, { message: 'Sesión cerrada.' });
   } else if (ruta.endsWith('/contrasena')) {
     if (!usuario) {
-      rechazar('Inici� sesi�n.', 401);
+      rechazar('Iniciá sesión.', 401);
     }
     validarContrasena(datos.Nueva);
     const { rows: filas } = await conexion.query(
@@ -137,7 +137,7 @@ export async function atenderAutenticacion(solicitud, respuesta, ruta, usuario) 
       [usuario.IdUsuario]
     );
     if (!(await verificarContrasena(String(datos.Actual || ''), filas[0]))) {
-      rechazar('La contrase�a actual no coincide.');
+      rechazar('La contraseña actual no coincide.');
     }
     const clave = await crearCredenciales(datos.Nueva);
     await ejecutarTransaccion(async (baseDatos) => {
@@ -151,11 +151,10 @@ export async function atenderAutenticacion(solicitud, respuesta, ruta, usuario) 
     });
     guardarCookie(respuesta, '', 0);
     responderJson(respuesta, {
-      message: 'Contrase�a actualizada. Volv� a iniciar sesi�n.'
+      message: 'Contraseña actualizada. Volvé a iniciar sesión.'
     });
   } else {
     return false;
   }
   return true;
 }
-
