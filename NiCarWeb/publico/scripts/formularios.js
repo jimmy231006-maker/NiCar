@@ -18,7 +18,7 @@ export function crearCampo(clave, opciones = {}) {
     : crearElemento('input', {
         id: clave,
         name: clave,
-        type: opciones.type || 'text',
+        type: opciones.type === 'contrasena' ? 'password' : opciones.type || 'text',
         required: opciones.required ? '' : undefined,
         maxlength: opciones.max,
         min: opciones.min,
