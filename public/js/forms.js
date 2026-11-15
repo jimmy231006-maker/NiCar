@@ -4,6 +4,15 @@ export function field(key,options={}) {
     el('option',{value:''},'Seleccioná'),...options.choices.map(x=>el('option',{value:typeof x==='object'?x.value:x},typeof x==='object'?x.label:x))):
     el('input',{id:key,name:key,type:options.type||'text',required:options.required?'':undefined,
       maxlength:options.max,min:options.min,step:options.step||undefined,autocomplete:options.autocomplete});
+  if(key==='Telefono') {
+    input.type='tel';
+    input.maxLength=8;
+    input.minLength=8;
+    input.pattern='[578][0-9]{7}';
+    input.inputMode='numeric';
+    input.placeholder='88881234';
+    input.title='Ocho dígitos, comenzando con 5, 7 u 8.';
+  }
   if(options.value!=null) input.value=options.value;
   return el('div',{},el('label',{for:key},options.label||label(key)),input);
 }

@@ -26,7 +26,8 @@ export function email(value) {
     throw new Error('Ingresá un correo electrónico válido.');
 }
 export function phone(value) {
-  if (!/^\+?[0-9]{8,15}$/.test(String(value || ''))) throw new Error('El teléfono debe tener de 8 a 15 dígitos.');
+  if (!/^[578][0-9]{7}$/.test(String(value || '')))
+    throw new Error('El teléfono debe tener 8 dígitos y comenzar con 5, 7 u 8. Ejemplo: 88881234.');
 }
 export function password(value) {
   if (typeof value !== 'string' || value.length < 12 || value.length > 100)
