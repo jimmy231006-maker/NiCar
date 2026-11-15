@@ -116,7 +116,8 @@ const servidor = createServer(async (solicitud, respuesta) => {
     }
     const contenidoArchivo = await readFile(archivo);
     respuesta.writeHead(200, {
-      'Content-Type': tiposContenido[extname(archivo)] || 'application/octet-stream'
+      'Content-Type': tiposContenido[extname(archivo)] || 'application/octet-stream',
+      'Cache-Control': 'no-store'
     });
     respuesta.end(solicitud.method === 'HEAD' ? undefined : contenidoArchivo);
   } catch (problema) {
