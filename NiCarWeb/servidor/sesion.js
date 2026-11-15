@@ -9,7 +9,8 @@ export async function obtenerSesion(solicitud) {
   }
   const resultado = await conexion.query(
     `SELECT u."IdUsuario",u."NombreCompleto",u."NombreUsuario",u."Rol",
-    u."DebeCambiarContrasena",u."Cedula",u."Nacimiento",u."IdCliente",c."Nombres",c."Apellidos",c."Telefono"
+    u."DebeCambiarContrasena",u."Cedula",u."Nacimiento",u."TipoDocumento",
+    u."NumeroDocumento",u."EdadDeclarada",u."IdCliente",c."Nombres",c."Apellidos",c."Telefono"
     FROM nicar."SesionWeb" s JOIN nicar."Usuario" u USING ("IdUsuario")
     LEFT JOIN nicar."Cliente" c ON c."IdCliente"=u."IdCliente"
     WHERE s."Token"=$1 AND s."Expira">now() AND u."Activo"`,
@@ -17,3 +18,4 @@ export async function obtenerSesion(solicitud) {
   );
   return resultado.rows[0] || null;
 }
+
