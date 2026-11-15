@@ -14,6 +14,19 @@ export async function atenderKardex(solicitud, respuesta, ruta, usuario) {
     SELECT s."FechaVenta",'Salida',s."NumeroComprobante",v."IdentificadorUnico",s."Total",s."Moneda"
     FROM nicar."Venta" s JOIN nicar."Vehiculo" v USING ("IdVehiculo")
     WHERE s."Activa"
+    UNION ALL
+    SELECT v."FechaRegistro"::date,'Saldo inicial','Existencia de demostración',
+      v."IdentificadorUnico",NULL::numeric,NULL::varchar
+    FROM nicar."Vehiculo" v
+    WHERE v."Activo" AND v."Estado"='Disponible'
+      AND NOT EXISTS (
+        SELECT 1 FROM nicar."AdquisicionVehiculo" a
+        WHERE a."IdVehiculo"=v."IdVehiculo"
+      )
+      AND NOT EXISTS (
+        SELECT 1 FROM nicar."Venta" s
+        WHERE s."IdVehiculo"=v."IdVehiculo" AND s."Activa"
+      )
   ) movimientos ORDER BY "Fecha" DESC LIMIT 1000`);
   responderJson(respuesta, resultado.rows);
   return true;
