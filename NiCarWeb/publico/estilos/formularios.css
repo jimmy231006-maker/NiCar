@@ -116,3 +116,24 @@ td button {
     min-width: 560px;
   }
 }
+
+
+.campo-formulario {
+  margin-bottom: 14px;
+}
+.campo-formulario label {
+  margin-top: 12px;
+}
+.ayuda-campo {
+  display: block;
+  margin-top: 5px;
+  color: #52616b;
+  font-size: 12px;
+  line-height: 1.45;
+}
+input[aria-invalid='true'],
+select[aria-invalid='true'],
+textarea[aria-invalid='true'] {
+  border-color: #ae291c;
+  box-shadow: 0 0 0 1px #ae291c;
+}
