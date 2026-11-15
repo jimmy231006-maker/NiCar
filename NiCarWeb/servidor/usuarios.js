@@ -1,6 +1,8 @@
 import { crearEmpleado } from './modelos/crear-empleado.js';
 import { validaciones } from './validaciones.js';
-import { conexion } from './base-datos.js';
+import { conexion, ejecutarTransaccion } from './base-datos.js';
+import { Cliente } from './modelos/cliente.js';
+import { ServicioClientes } from './servicios/servicio-clientes.js';
 import {
   responderJson,
   leerFormulario,
@@ -31,11 +33,51 @@ export async function atenderUsuarios(solicitud, respuesta, ruta, usuario) {
   if (!/^\/api\/usuarios(?:\/\d+)?$/.test(ruta) && !rutaRestablecer) {
     return false;
   }
+  if (ruta === '/api/usuarios' && solicitud.method === 'POST') {
+    exigirRol(usuario, ['SuperAdministrador', 'Administrador', 'Vendedor']);
+    const rolesAsignables = usuario.Rol === 'SuperAdministrador'
+      ? ['Administrador', 'Vendedor', 'Caja', 'Recepcionista', 'Bodega', 'Cliente']
+      : usuario.Rol === 'Administrador'
+        ? ['Vendedor', 'Caja', 'Recepcionista', 'Bodega', 'Cliente']
+        : ['Cliente'];
+    const datos = await leerFormulario(solicitud);
+    if (!rolesAsignables.includes(datos.Rol)) rechazar('Tu rol no puede asignar ese tipo de cuenta.', 403);
+    validarCorreo(datos.Correo);
+    validarContrasena(datos.Contrasena);
+    if (datos.Rol === 'Cliente') {
+      datos.Nombre = [datos.Nombres, datos.Apellidos].join(' ');
+      const nacimiento = validaciones.validarRegistro(datos);
+      const perfil = new Cliente(datos.Nombre, datos.Correo, nacimiento.value, nacimiento.birth).obtenerDatos();
+      const clave = await crearCredenciales(datos.Contrasena);
+      await ejecutarTransaccion(async baseDatos => {
+        const idCliente = await new ServicioClientes(baseDatos).registrar(datos);
+        await baseDatos.query(
+          `INSERT INTO nicar."Usuario" ("NombreUsuario","NombreCompleto","Rol","HashContrasena","Salt",
+            "DebeCambiarContrasena","Cedula","Nacimiento","IdCliente")
+           VALUES ($1,$2,'Cliente',$3,$4,true,$5,$6,$7)`,
+          [perfil.NombreUsuario,perfil.NombreCompleto,clave.HashContrasena,clave.Salt,
+            perfil.Cedula,perfil.Nacimiento,idCliente]
+        );
+      });
+    } else {
+      validarNombre(datos.Nombre);
+      if (datos.Nombre.length > 100 || datos.Correo.length > 50) rechazar('Revisá el nombre y el correo.');
+      const perfil = crearEmpleado(datos.Nombre, datos.Correo, datos.Rol).obtenerDatos();
+      const clave = await crearCredenciales(datos.Contrasena);
+      await conexion.query(
+        `INSERT INTO nicar."Usuario" ("NombreUsuario","NombreCompleto","Rol","HashContrasena","Salt","DebeCambiarContrasena")
+         VALUES ($1,$2,$3,$4,$5,true)`,
+        [perfil.NombreUsuario,perfil.NombreCompleto,perfil.Rol,clave.HashContrasena,clave.Salt]
+      );
+    }
+    responderJson(respuesta,{message:'Cuenta creada. Debe cambiar la contraseña al ingresar.'},201);
+    return true;
+  }
   exigirRol(usuario, administradores);
   const roles =
     usuario.Rol === 'SuperAdministrador'
-      ? ['Administrador', 'Vendedor', 'Recepcionista', 'Bodega']
-      : ['Vendedor', 'Recepcionista', 'Bodega'];
+      ? ['Administrador', 'Vendedor', 'Caja', 'Recepcionista', 'Bodega']
+      : ['Vendedor', 'Caja', 'Recepcionista', 'Bodega'];
   if (rutaRestablecer) {
     if (solicitud.method !== 'POST') return false;
     const codigo = Number(rutaRestablecer[1]);
@@ -74,37 +116,6 @@ export async function atenderUsuarios(solicitud, respuesta, ruta, usuario) {
           ]
         )
       ).rows
-    );
-  } else if (solicitud.method === 'POST' && ruta === '/api/usuarios') {
-    const datos = await leerFormulario(solicitud);
-    validarNombre(datos.Nombre);
-    validarCorreo(datos.Correo);
-    validarContrasena(datos.Contrasena);
-    if (
-      datos.Nombre.length > 100 ||
-      datos.Correo.length > 50 ||
-      !roles.filter((r) => r !== 'Cliente').includes(datos.Rol)
-    ) {
-      rechazar('Revisá el nombre, correo y rol.');
-    }
-    const empleado = crearEmpleado(datos.Nombre, datos.Correo, datos.Rol);
-    const perfil = empleado.obtenerDatos();
-    const clave = await crearCredenciales(datos.Contrasena);
-    await conexion.query(
-      `INSERT INTO nicar."Usuario" ("NombreUsuario","NombreCompleto","Rol","HashContrasena","Salt")
-      VALUES ($1,$2,$3,$4,$5)`,
-      [
-        perfil.NombreUsuario,
-        perfil.NombreCompleto,
-        perfil.Rol,
-        clave.HashContrasena,
-        clave.Salt
-      ]
-    );
-    responderJson(
-      respuesta,
-      { message: 'Cuenta creada. Debe cambiar la contraseña al ingresar.' },
-      201
     );
   } else if (solicitud.method === 'PUT') {
     const codigo = Number(ruta.split('/').pop());
