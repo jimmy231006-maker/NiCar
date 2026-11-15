@@ -137,3 +137,207 @@ textarea[aria-invalid='true'] {
   border-color: #ae291c;
   box-shadow: 0 0 0 1px #ae291c;
 }
+
+
+/* Inventario: vista visual, clara y adaptable */
+.inventario {
+  display: grid;
+  gap: 18px;
+}
+.inventario-resumen {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+.inventario-indicador {
+  display: grid;
+  gap: 8px;
+  padding: 18px 20px;
+  background: #fff;
+  border: 1px solid #dfe6e9;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgb(24 42 54 / 5%);
+}
+.inventario-indicador span {
+  color: #60727d;
+  font-size: 13px;
+}
+.inventario-indicador strong {
+  color: #182a36;
+  font-size: 28px;
+  line-height: 1;
+}
+.inventario-indicador-verde strong {
+  color: #24734b;
+}
+.inventario-filtros {
+  display: grid;
+  grid-template-columns: minmax(220px, 2fr) repeat(3, minmax(150px, 1fr));
+  gap: 10px;
+  padding: 14px;
+  background: #fff;
+  border: 1px solid #dfe6e9;
+  border-radius: 12px;
+}
+.inventario-filtros input,
+.inventario-filtros select {
+  min-width: 0;
+  min-height: 44px;
+  margin: 0;
+  padding: 10px 12px;
+}
+.inventario-conteo {
+  margin: 0;
+  color: #60727d;
+  font-size: 14px;
+  font-weight: 600;
+}
+.inventario-tarjetas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(285px, 1fr));
+  gap: 18px;
+}
+.inventario-tarjeta {
+  min-width: 0;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #dfe6e9;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgb(24 42 54 / 6%);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+.inventario-tarjeta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgb(24 42 54 / 11%);
+}
+.inventario-foto {
+  display: grid;
+  place-items: center;
+  height: 190px;
+  overflow: hidden;
+  color: #637780;
+  background: linear-gradient(135deg, #e7edf0, #d8e1e5);
+  font-size: 14px;
+}
+.inventario-foto img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.inventario-cuerpo {
+  display: grid;
+  gap: 10px;
+  padding: 17px;
+}
+.inventario-insignias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.inventario-insignia {
+  display: inline-flex;
+  align-items: center;
+  min-height: 25px;
+  padding: 4px 9px;
+  color: #344b57;
+  background: #eef3f5;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.inventario-insignia.estado-disponible {
+  color: #176440;
+  background: #e5f4eb;
+}
+.inventario-insignia.estado-vendido {
+  color: #8b421e;
+  background: #fff0e7;
+}
+.inventario-codigo,
+.inventario-color {
+  margin: 0;
+  color: #61727b;
+  font-size: 12px;
+}
+.inventario-codigo {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+.inventario-cuerpo h2 {
+  margin: 0;
+  color: #182a36;
+  font-size: 19px;
+  line-height: 1.25;
+}
+.inventario-precio {
+  color: #172f3b;
+  font-size: 22px;
+}
+.inventario-detalles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 12px;
+  margin: 3px 0;
+  padding: 12px 0;
+  border-top: 1px solid #e8edef;
+  border-bottom: 1px solid #e8edef;
+}
+.inventario-detalles dt {
+  color: #687b84;
+  font-size: 11px;
+}
+.inventario-detalles dd {
+  margin: 2px 0 0;
+  color: #1d3440;
+  font-size: 13px;
+  font-weight: 600;
+}
+.inventario-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.inventario-acciones button {
+  flex: 1 1 110px;
+}
+.inventario-acciones .boton-secundario {
+  color: #29424f;
+  background: #fff;
+  border: 1px solid #cbd6dc;
+}
+.inventario-acciones .boton-secundario:hover {
+  background: #f1f5f6;
+}
+
+@media (max-width: 850px) {
+  .inventario-resumen {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .inventario-filtros {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .inventario-filtros input {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 520px) {
+  .inventario-resumen {
+    gap: 9px;
+  }
+  .inventario-indicador {
+    padding: 14px;
+  }
+  .inventario-indicador strong {
+    font-size: 24px;
+  }
+  .inventario-filtros,
+  .inventario-tarjetas {
+    grid-template-columns: 1fr;
+  }
+  .inventario-filtros input {
+    grid-column: auto;
+  }
+  .inventario-foto {
+    height: 175px;
+  }
+}
