@@ -11,5 +11,10 @@
   { "name": "DebeCambiarContrasena", "type": "boolean", "required": true },
   { "name": "FechaCreacion", "type": "timestamp without time zone", "required": true },
   { "name": "Cedula", "type": "character varying", "max": 14 },
-  { "name": "Nacimiento", "type": "date" }
+  { "name": "Nacimiento", "type": "date" },
+  { "name": "TipoDocumento", "type": "character varying", "max": 15 },
+  { "name": "NumeroDocumento", "type": "character varying", "max": 30 },
+  { "name": "EdadDeclarada", "type": "smallint", "max": 120 },
+  { "name": "IdCliente", "type": "integer" }
 ]
+
