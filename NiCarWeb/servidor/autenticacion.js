@@ -69,8 +69,10 @@ export async function atenderAutenticacion(solicitud, respuesta, ruta, usuario) 
         datos.Contrasena,
         cuenta || credencialesFicticias
       );
-      if (!cuenta || !cuenta.Activo || cuenta.blocked || !valido) {
-        if (cuenta?.Activo && !cuenta.blocked) {
+      const esSuperAdministrador = cuenta?.Rol === 'SuperAdministrador';
+      const bloqueada = !esSuperAdministrador && Boolean(cuenta?.blocked);
+      if (!cuenta || !cuenta.Activo || bloqueada || !valido) {
+        if (cuenta?.Activo && !esSuperAdministrador && !bloqueada) {
           const intentos = cuenta.BloqueadoHasta ? 1 : cuenta.IntentosFallidos + 1;
           await baseDatos.query(
             `UPDATE nicar."Usuario" SET "IntentosFallidos"=$1,
@@ -86,7 +88,8 @@ export async function atenderAutenticacion(solicitud, respuesta, ruta, usuario) 
         const restantes = accountRestantes(cuenta);
         const mensaje = !cuenta ? 'El usuario no está registrado.'
           : !cuenta.Activo ? 'La cuenta está desactivada.'
-          : cuenta.blocked ? 'La cuenta está bloqueada. Esperá 15 minutos.'
+          : esSuperAdministrador ? 'El usuario es correcto, pero la contraseña no coincide.'
+          : bloqueada ? 'La cuenta está bloqueada. Esperá 15 minutos.'
           : restantes === 0 ? 'El usuario es correcto. Se agotaron los cinco intentos. Esperá 15 minutos.'
           : 'El usuario es correcto, pero la contraseña no. Te quedan ' + restantes + ' intentos.';
         return { mensaje };
