@@ -27,7 +27,8 @@ export async function atenderUsuarios(solicitud, respuesta, ruta, usuario) {
     );
     return true;
   }
-  if (!/^\/api\/usuarios(?:\/\d+)?$/.test(ruta)) {
+  const rutaRestablecer = /^\/api\/usuarios\/(\d+)\/contrasena$/.exec(ruta);
+  if (!/^\/api\/usuarios(?:\/\d+)?$/.test(ruta) && !rutaRestablecer) {
     return false;
   }
   exigirRol(usuario, administradores);
@@ -35,7 +36,31 @@ export async function atenderUsuarios(solicitud, respuesta, ruta, usuario) {
     usuario.Rol === 'SuperAdministrador'
       ? ['Administrador', 'Vendedor', 'Recepcionista', 'Bodega']
       : ['Vendedor', 'Recepcionista', 'Bodega'];
-  if (solicitud.method === 'GET') {
+  if (rutaRestablecer) {
+    if (solicitud.method !== 'POST') return false;
+    const codigo = Number(rutaRestablecer[1]);
+    if (!Number.isSafeInteger(codigo) || codigo === usuario.IdUsuario) {
+      rechazar('No podés restablecer tu propia cuenta desde administración.');
+    }
+    const datos = await leerFormulario(solicitud);
+    validarContrasena(datos.Contrasena);
+    const destino = await conexion.query(
+      'SELECT "Rol" FROM nicar."Usuario" WHERE "IdUsuario"=$1 AND "Rol"=ANY($2) AND "Activo"=true',
+      [codigo, roles]
+    );
+    if (!destino.rows[0]) rechazar('Cuenta no encontrada o sin permiso.', 404);
+    const clave = await crearCredenciales(datos.Contrasena);
+    await conexion.query(
+      `UPDATE nicar."Usuario" SET "HashContrasena"=$1,"Salt"=$2,
+       "IntentosFallidos"=0,"BloqueadoHasta"=NULL,"DebeCambiarContrasena"=true
+       WHERE "IdUsuario"=$3 AND "Rol"=ANY($4)`,
+      [clave.HashContrasena, clave.Salt, codigo, roles]
+    );
+    await conexion.query('DELETE FROM nicar."SesionWeb" WHERE "IdUsuario"=$1', [codigo]);
+    responderJson(respuesta, {
+      message: 'Contraseña restablecida. La persona debe cambiarla al iniciar sesión.'
+    });
+  } else if (solicitud.method === 'GET') {
     responderJson(
       respuesta,
       (
