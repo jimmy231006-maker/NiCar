@@ -21,6 +21,7 @@ export function crearCampo(clave, opciones = {}) {
         type: opciones.type === 'contrasena' ? 'password' : opciones.type || 'text',
         required: opciones.required ? '' : undefined,
         maxlength: opciones.max,
+        minlength: opciones.minLength,
         min: opciones.min,
         max: opciones.max,
         step: opciones.step || undefined,
