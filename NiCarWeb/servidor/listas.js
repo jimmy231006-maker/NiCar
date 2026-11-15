@@ -43,7 +43,7 @@ export async function atenderListas(solicitud, respuesta, ruta, usuario) {
   if (!ruta.startsWith('/api/listas/') || !configuracion[tabla] || solicitud.method !== 'GET') return false;
   exigirRol(usuario, tabla === 'Financiera'
     ? [...administradores, 'Vendedor']
-    : tabla === 'Vehiculo'
+    : tabla === 'Vehiculo' || tabla === 'Modelo'
       ? [...personal, 'Bodega']
       : tabla === 'Cliente' ? personal : administradores);
   if (tabla === 'Financiera') {
