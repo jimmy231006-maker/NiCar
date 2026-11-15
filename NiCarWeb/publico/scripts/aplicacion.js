@@ -42,6 +42,8 @@ function actualizarMenu() {
     }
     if (['SuperAdministrador', 'Administrador'].includes(estado.usuario.Rol)) {
       navegacion.append(crearElemento('a', { href: '#usuarios' }, 'Cuentas'));
+    } else if (estado.usuario.Rol === 'Vendedor') {
+      navegacion.append(crearElemento('a', { href: '#crear-cuenta' }, 'Crear cuenta'));
     }
     if (estado.usuario.Rol === 'SuperAdministrador') {
       navegacion.append(crearElemento('a', { href: '#auditoria' }, 'Auditoría'));
@@ -112,6 +114,8 @@ async function mostrarPagina() {
       await mostrarCreditos();
     } else if (ruta === 'usuarios') {
       await mostrarUsuarios();
+    } else if (ruta === 'crear-cuenta') {
+      await mostrarUsuarios(true);
     } else if (ruta === 'auditoria') {
       await mostrarAuditoria();
     } else if (ruta === 'kardex') {
