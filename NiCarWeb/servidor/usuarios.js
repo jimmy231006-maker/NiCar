@@ -69,7 +69,7 @@ export async function atenderUsuarios(solicitud, respuesta, ruta, usuario) {
         [perfil.NombreUsuario,perfil.NombreCompleto,perfil.Rol,clave.HashContrasena,clave.Salt]
       );
     }
-    responderJson(respuesta,{message:'Cuenta creada. Debe cambiar la contrase�a al ingresar.'},201);
+    responderJson(respuesta,{message:'Cuenta creada. Debe cambiar la contraseña al ingresar.'},201);
     return true;
   }
   exigirRol(usuario, administradores);
@@ -81,7 +81,7 @@ export async function atenderUsuarios(solicitud, respuesta, ruta, usuario) {
     if (solicitud.method !== 'POST') return false;
     const codigo = Number(rutaRestablecer[1]);
     if (!Number.isSafeInteger(codigo) || codigo === usuario.IdUsuario) {
-      rechazar('No pod�s restablecer tu propia cuenta desde administraci�n.');
+      rechazar('No podés restablecer tu propia cuenta desde administración.');
     }
     const datos = await leerFormulario(solicitud);
     validarContrasena(datos.Contrasena);
@@ -99,7 +99,7 @@ export async function atenderUsuarios(solicitud, respuesta, ruta, usuario) {
     );
     await conexion.query('DELETE FROM nicar."SesionWeb" WHERE "IdUsuario"=$1', [codigo]);
     responderJson(respuesta, {
-      message: 'Contrase�a restablecida. La persona debe cambiarla al iniciar sesi�n.'
+      message: 'Contraseña restablecida. La persona debe cambiarla al iniciar sesión.'
     });
   } else if (solicitud.method === 'GET') {
     responderJson(
@@ -120,7 +120,7 @@ export async function atenderUsuarios(solicitud, respuesta, ruta, usuario) {
     const codigo = Number(ruta.split('/').pop());
     const datos = await leerFormulario(solicitud);
     if (!Number.isSafeInteger(codigo) || codigo === usuario.IdUsuario) {
-      rechazar('No pod�s editar tu propia cuenta desde administraci�n.');
+      rechazar('No podés editar tu propia cuenta desde administración.');
     }
     const destino = await conexion.query(
       'SELECT "Rol" FROM nicar."Usuario" WHERE "IdUsuario"=$1 AND "Rol"=ANY($2)',
@@ -140,10 +140,10 @@ export async function atenderUsuarios(solicitud, respuesta, ruta, usuario) {
       if (datos.Correo.length > 50) rechazar('El correo no puede superar 50 caracteres.');
     }
     if (datos.Rol !== undefined && (!roles.includes(datos.Rol) || datos.Rol === 'SuperAdministrador')) {
-      rechazar('No pod�s asignar ese rol.');
+      rechazar('No podés asignar ese rol.');
     }
     if (datos.PorcentajeComision !== undefined && Number(datos.PorcentajeComision) !== 5) {
-      rechazar('La comisi�n es fija en 5%.');
+      rechazar('La comisión es fija en 5%.');
     }
     const campos = [];
     const valores = [];
@@ -153,19 +153,19 @@ export async function atenderUsuarios(solicitud, respuesta, ruta, usuario) {
         campos.push(`"${columna}"=$${valores.length}`);
       }
     }
-    if (!campos.length) rechazar('Indic� al menos un dato que quieras actualizar.');
+    if (!campos.length) rechazar('Indicá al menos un dato que quieras actualizar.');
     valores.push(codigo, roles);
     const resultado = await conexion.query(
       `UPDATE nicar."Usuario" SET ${campos.join(', ')}
        WHERE "IdUsuario"=$${valores.length - 1} AND "Rol"=ANY($${valores.length})
        RETURNING "IdUsuario"`, valores
     );
-    if (!resultado.rows.length) rechazar('La cuenta cambi� o ya no est� disponible.', 409);
+    if (!resultado.rows.length) rechazar('La cuenta cambió o ya no está disponible.', 409);
     responderJson(respuesta, { message: 'Datos de la cuenta actualizados.' });
   } else if (solicitud.method === 'DELETE') {
     const codigo = Number(ruta.split('/').pop());
     if (codigo === usuario.IdUsuario) {
-      rechazar('No pod�s desactivar tu propia cuenta.');
+      rechazar('No podés desactivar tu propia cuenta.');
     }
     await conexion.query(
       `UPDATE nicar."Usuario" SET "Activo"=NOT "Activo" WHERE "IdUsuario"=$1 AND "Rol"=ANY($2)`,
@@ -177,4 +177,3 @@ export async function atenderUsuarios(solicitud, respuesta, ruta, usuario) {
   }
   return true;
 }
-
