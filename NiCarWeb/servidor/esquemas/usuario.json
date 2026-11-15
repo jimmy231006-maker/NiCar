@@ -1,0 +1,15 @@
+[
+  { "name": "IdUsuario", "type": "integer", "required": true, "generated": true },
+  { "name": "NombreUsuario", "type": "text", "required": true },
+  { "name": "NombreCompleto", "type": "text", "required": true },
+  { "name": "Rol", "type": "text", "required": true },
+  { "name": "HashContrasena", "type": "text", "required": true },
+  { "name": "Salt", "type": "text", "required": true },
+  { "name": "Activo", "type": "boolean", "required": true },
+  { "name": "IntentosFallidos", "type": "integer", "required": true },
+  { "name": "BloqueadoHasta", "type": "timestamp without time zone" },
+  { "name": "DebeCambiarContrasena", "type": "boolean", "required": true },
+  { "name": "FechaCreacion", "type": "timestamp without time zone", "required": true },
+  { "name": "Cedula", "type": "character varying", "max": 14 },
+  { "name": "Nacimiento", "type": "date" }
+]

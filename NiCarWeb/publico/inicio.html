@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>NiCar · Vehículos en Nicaragua</title>
+    <link rel="stylesheet" href="/estilos/general.css" />
+    <link rel="stylesheet" href="/estilos/detalles.css" />
+    <link rel="stylesheet" href="/estilos/formularios.css" />
+    <script type="module" src="/scripts/aplicacion.js"></script>
+  </head>
+  <body>
+    <header>
+      <a class="marca" href="#catalogo"><span>Ni</span>Car</a>
+      <nav id="navegacion" aria-label="Menú principal"></nav>
+      <div id="cuenta"></div>
+    </header>
+    <main id="contenido" tabindex="-1"><p>Cargando NiCar…</p></main>
+    <p id="aviso" role="status" aria-live="polite" hidden></p>
+    <dialog id="ventana">
+      <form id="formulario-modal">
+        <header>
+          <h2 id="titulo-modal"></h2>
+          <button type="button" id="cerrar-modal" aria-label="Cerrar">×</button>
+        </header>
+        <div id="campos-modal"></div>
+        <p id="error-modal" role="alert"></p>
+        <button type="submit">Guardar</button>
+      </form>
+    </dialog>
+    <footer>NiCar · Nicaragua · Visitas presenciales</footer>
+  </body>
+</html>

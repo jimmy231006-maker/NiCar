@@ -1,0 +1,10 @@
+[
+  { "name": "IdFinanciera", "type": "integer", "required": true, "generated": true },
+  { "name": "Nombre", "type": "character varying", "required": true, "max": 150 },
+  { "name": "SitioWeb", "type": "character varying", "max": 250 },
+  { "name": "InstruccionesPago", "type": "character varying", "max": 500 },
+  { "name": "Observaciones", "type": "character varying", "max": 500 },
+  { "name": "PlazoMinimoMeses", "type": "smallint", "required": true, "minimo": 1 },
+  { "name": "PlazoMaximoMeses", "type": "smallint", "required": true, "maximo": 84 },
+  { "name": "Activo", "type": "boolean", "required": true }
+]

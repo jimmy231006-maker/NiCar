@@ -1,0 +1,9 @@
+[
+  { "name": "IdCita", "type": "bigint", "required": true, "generated": true },
+  { "name": "IdVehiculo", "type": "integer", "required": true },
+  { "name": "Nombre", "type": "character varying", "required": true, "max": 100 },
+  { "name": "Telefono", "type": "character varying", "required": true, "max": 16 },
+  { "name": "Inicio", "type": "timestamp without time zone", "required": true },
+  { "name": "IdUsuario", "type": "integer" },
+  { "name": "Cupo", "type": "smallint", "required": true }
+]

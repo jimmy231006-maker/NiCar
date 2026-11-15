@@ -1,0 +1,118 @@
+.tarjeta {
+  background: #fff;
+  border: 1px solid #dfe6e9;
+  padding: 28px;
+  border-radius: 10px;
+}
+.acceso {
+  max-width: 490px;
+  margin: 10px auto;
+}
+label {
+  display: block;
+  margin: 16px 0 7px;
+  font-weight: 600;
+  font-size: 14px;
+}
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #b7c4cb;
+  border-radius: 5px;
+  background: white;
+  color: #182a36;
+}
+input:focus,
+select:focus {
+  outline: 2px solid #d65022;
+  outline-offset: 1px;
+}
+form button[type='submit'] {
+  margin-top: 20px;
+}
+.error,
+#error-modal {
+  color: #ae291c;
+}
+form p {
+  font-size: 14px;
+}
+.barra-acciones {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 22px 0;
+  flex-wrap: wrap;
+}
+.barra-acciones select {
+  width: auto;
+}
+.contenedor-tabla {
+  overflow: auto;
+  background: white;
+  border: 1px solid #dfe6e9;
+  border-radius: 8px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+th,
+td {
+  text-align: left;
+  padding: 14px;
+  border-bottom: 1px solid #e6ecef;
+  max-width: 250px;
+  overflow-wrap: anywhere;
+}
+th {
+  background: #edf2f4;
+  font-weight: 600;
+}
+td button {
+  font-size: 12px;
+  padding: 7px 10px;
+  margin: 2px;
+}
+.sin-registros {
+  padding: 40px;
+  background: #fff;
+  border: 1px dashed #b7c4cb;
+  border-radius: 8px;
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  .tarjeta {
+    padding: 20px;
+  }
+  .barra-acciones {
+    align-items: stretch;
+  }
+  .barra-acciones select,
+  .barra-acciones button {
+    width: 100%;
+  }
+  td,
+  th {
+    padding: 10px;
+  }
+  td button {
+    min-height: 40px;
+  }
+}
+@media (max-width: 420px) {
+  .tarjeta {
+    padding: 16px;
+  }
+  .sin-registros {
+    padding: 24px 16px;
+  }
+  table {
+    min-width: 560px;
+  }
+}

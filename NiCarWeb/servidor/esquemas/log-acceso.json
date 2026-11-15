@@ -1,0 +1,7 @@
+[
+  { "name": "IdLog", "type": "bigint", "required": true, "generated": true },
+  { "name": "IdUsuario", "type": "integer" },
+  { "name": "NombreIngresado", "type": "text" },
+  { "name": "Evento", "type": "text", "required": true },
+  { "name": "FechaHora", "type": "timestamp without time zone", "required": true }
+]

@@ -1,0 +1,14 @@
+[
+  { "name": "IdCosto", "type": "integer", "required": true, "generated": true },
+  { "name": "IdVehiculo", "type": "integer", "required": true },
+  { "name": "IdTipoCosto", "type": "integer", "required": true },
+  { "name": "Descripcion", "type": "character varying", "required": true, "max": 200 },
+  { "name": "FechaCosto", "type": "date", "required": true },
+  { "name": "Monto", "type": "numeric", "required": true },
+  { "name": "Moneda", "type": "character varying", "required": true, "max": 3 },
+  { "name": "TasaCambio", "type": "numeric", "required": true },
+  { "name": "MontoNIO", "type": "numeric" },
+  { "name": "NumeroDocumento", "type": "character varying", "max": 80 },
+  { "name": "Observaciones", "type": "character varying", "max": 300 },
+  { "name": "Activo", "type": "boolean", "required": true }
+]

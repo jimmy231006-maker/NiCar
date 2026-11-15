@@ -1,0 +1,26 @@
+{
+  "moneda": "NIO",
+  "tasaOficial": {
+    "valor": "36.6243",
+    "desde": "2026-01-01",
+    "hasta": "2026-12-31",
+    "fuente": "https://bcn.gob.ni/node/10376"
+  },
+  "monedasCaja": [
+    5,
+    1,
+    0.5,
+    0.25
+  ],
+  "billetesCaja": [
+    1000,
+    500,
+    200,
+    100,
+    50,
+    20,
+    10
+  ],
+  "nota": "Las monedas de caja son la selección operativa solicitada. El BCN también publica otras denominaciones en circulación.",
+  "tasaComercial": "36.60"
+}

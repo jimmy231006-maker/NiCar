@@ -1,0 +1,10 @@
+[
+  { "name": "IdAdquisicion", "type": "integer", "required": true, "generated": true },
+  { "name": "IdVehiculo", "type": "integer", "required": true },
+  { "name": "IdProveedor", "type": "integer", "required": true },
+  { "name": "FechaAdquisicion", "type": "date", "required": true },
+  { "name": "PrecioCompra", "type": "numeric", "required": true },
+  { "name": "Moneda", "type": "character varying", "required": true, "max": 3 },
+  { "name": "TasaCambio", "type": "numeric", "required": true },
+  { "name": "PrecioCompraNIO", "type": "numeric", "generated": true }
+]

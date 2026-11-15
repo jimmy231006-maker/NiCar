@@ -1,0 +1,154 @@
+[
+  {
+    "name": "IdVehiculo",
+    "type": "integer",
+    "required": true,
+    "generated": true
+  },
+  {
+    "name": "IdModelo",
+    "type": "integer",
+    "required": true
+  },
+  {
+    "name": "IdentificadorUnico",
+    "type": "character varying",
+    "required": true,
+    "max": 50
+  },
+  {
+    "name": "Condicion",
+    "type": "character varying",
+    "required": true,
+    "max": 10
+  },
+  {
+    "name": "VIN",
+    "type": "character varying",
+    "max": 17
+  },
+  {
+    "name": "NumeroChasis",
+    "type": "character varying",
+    "max": 50
+  },
+  {
+    "name": "Placa",
+    "type": "character varying",
+    "max": 10
+  },
+  {
+    "name": "EstadoMatricula",
+    "type": "character varying",
+    "required": true,
+    "max": 20
+  },
+  {
+    "name": "Anio",
+    "type": "smallint",
+    "required": true
+  },
+  {
+    "name": "Version",
+    "type": "character varying",
+    "max": 80
+  },
+  {
+    "name": "ColorExterior",
+    "type": "character varying",
+    "required": true,
+    "max": 40
+  },
+  {
+    "name": "ColorInterior",
+    "type": "character varying",
+    "max": 40
+  },
+  {
+    "name": "Transmision",
+    "type": "character varying",
+    "required": true,
+    "max": 20
+  },
+  {
+    "name": "Traccion",
+    "type": "character varying",
+    "required": true,
+    "max": 15
+  },
+  {
+    "name": "Combustible",
+    "type": "character varying",
+    "required": true,
+    "max": 20
+  },
+  {
+    "name": "Kilometraje",
+    "type": "bigint",
+    "required": true
+  },
+  {
+    "name": "TipoCarroceria",
+    "type": "character varying",
+    "required": true,
+    "max": 30
+  },
+  {
+    "name": "Estado",
+    "type": "character varying",
+    "required": true,
+    "max": 25
+  },
+  {
+    "name": "FechaRegistro",
+    "type": "timestamp without time zone",
+    "required": true
+  },
+  {
+    "name": "Observaciones",
+    "type": "character varying",
+    "max": 500
+  },
+  {
+    "name": "PrecioOferta",
+    "type": "numeric"
+  },
+  {
+    "name": "ImagenUrl",
+    "type": "character varying",
+    "max": 500
+  },
+  {
+    "name": "Ubicacion",
+    "type": "character varying",
+    "max": 80
+  },
+  {
+    "name": "Activo",
+    "type": "boolean",
+    "required": true
+  },
+  {
+    "name": "NumeroPuertas",
+    "type": "smallint",
+    "minimo": 1,
+    "maximo": 6
+  },
+  {
+    "name": "CilindrajeCc",
+    "type": "integer",
+    "minimo": 1,
+    "maximo": 2147483647
+  },
+  {
+    "name": "PotenciaKw",
+    "type": "numeric",
+    "minimo": 0.01
+  },
+  {
+    "name": "NumeroAsientos",
+    "type": "smallint",
+    "minimo": 1,
+    "maximo": 100
+  }
+]

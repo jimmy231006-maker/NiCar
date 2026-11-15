@@ -1,0 +1,6 @@
+[
+  { "name": "IdModelo", "type": "integer", "required": true, "generated": true },
+  { "name": "IdMarca", "type": "integer", "required": true },
+  { "name": "Nombre", "type": "character varying", "required": true, "max": 80 },
+  { "name": "Activo", "type": "boolean", "required": true }
+]

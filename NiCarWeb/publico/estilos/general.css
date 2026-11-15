@@ -1,0 +1,215 @@
+:root {
+  font-family: Barlow, Arial, sans-serif;
+  color: #182a36;
+  background: #f4f6f7;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+a {
+  color: inherit;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+button,
+a.boton {
+  background: #d65022;
+  color: white;
+  border: 0;
+  border-radius: 6px;
+  padding: 11px 18px;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 600;
+}
+button:hover {
+  background: #b13c14;
+}
+button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+header {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  background: white;
+  padding: 20px 5%;
+  border-bottom: 1px solid #dae1e5;
+}
+.marca {
+  font-size: 32px;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: -1px;
+}
+.marca span {
+  color: #d65022;
+}
+nav {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+nav a {
+  text-decoration: none;
+  font-weight: 600;
+}
+#cuenta {
+  margin-left: auto;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 14px;
+}
+#cuenta button {
+  padding: 7px 12px;
+}
+main {
+  max-width: 1280px;
+  margin: auto;
+  padding: 40px 24px;
+  min-height: 78vh;
+}
+h1 {
+  font-size: clamp(30px, 5vw, 48px);
+  line-height: 1.1;
+  margin: 8px 0 15px;
+  letter-spacing: -1px;
+}
+h2 {
+  font-size: 22px;
+}
+p {
+  line-height: 1.55;
+}
+.presentacion {
+  background: #172f3b;
+  color: #fff;
+  border-radius: 12px;
+  padding: 42px;
+  margin-bottom: 30px;
+}
+.presentacion p {
+  color: #d0dde4;
+  max-width: 540px;
+}
+.subtitulo {
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.busqueda {
+  display: flex;
+  max-width: 620px;
+  gap: 10px;
+}
+.busqueda input {
+  flex: 1;
+  min-width: 0;
+}
+.cuadricula {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 24px;
+}
+.vehiculo {
+  background: white;
+  border: 1px solid #dfe6e9;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.fotografia {
+  height: 210px;
+  background: #e2e9ec;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  color: #627985;
+  overflow: hidden;
+}
+.fotografia img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.contenido-vehiculo {
+  padding: 22px;
+}
+.vehiculo h2 {
+  margin: 0 0 10px;
+}
+.vehiculo p {
+  color: #66777f;
+  font-size: 14px;
+  margin: 5px 0;
+}
+.precio {
+  display: block;
+  margin: 18px 0;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+@media (max-width: 700px) {
+  header {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 15px;
+  }
+  nav {
+    order: 3;
+    width: 100%;
+    gap: 12px;
+  }
+  #cuenta {
+    margin-left: auto;
+    gap: 8px;
+    font-size: 12px;
+  }
+  main {
+    padding: 25px 15px;
+  }
+  .presentacion {
+    padding: 26px;
+  }
+  .busqueda {
+    flex-direction: column;
+  }
+  .busqueda button {
+    width: 100%;
+  }
+  .cuadricula {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+    gap: 16px;
+  }
+  .contenido-vehiculo {
+    padding: 18px;
+  }
+}
+@media (max-width: 420px) {
+  .marca {
+    font-size: 28px;
+  }
+  nav {
+    gap: 9px;
+    font-size: 14px;
+  }
+  .presentacion {
+    padding: 20px;
+  }
+  .precio {
+    font-size: 22px;
+  }
+}

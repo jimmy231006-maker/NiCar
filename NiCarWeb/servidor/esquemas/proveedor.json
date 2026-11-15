@@ -1,0 +1,20 @@
+[
+  { "name": "IdProveedor", "type": "integer", "required": true, "generated": true },
+  { "name": "TipoProveedor", "type": "character varying", "required": true, "max": 30 },
+  {
+    "name": "NombreProveedor",
+    "type": "character varying",
+    "required": true,
+    "max": 150
+  },
+  { "name": "IdentificacionFiscal", "type": "character varying", "max": 30 },
+  { "name": "Pais", "type": "character varying", "required": true, "max": 60 },
+  { "name": "Ciudad", "type": "character varying", "max": 80 },
+  { "name": "Direccion", "type": "character varying", "max": 250 },
+  { "name": "Telefono", "type": "character varying", "max": 20 },
+  { "name": "Correo", "type": "character varying", "max": 120 },
+  { "name": "Contacto", "type": "character varying", "max": 120 },
+  { "name": "FechaRegistro", "type": "timestamp without time zone", "required": true },
+  { "name": "Observaciones", "type": "character varying", "max": 500 },
+  { "name": "Activo", "type": "boolean", "required": true }
+]

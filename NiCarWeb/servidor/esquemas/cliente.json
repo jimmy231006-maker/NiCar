@@ -1,0 +1,24 @@
+[
+  { "name": "IdCliente", "type": "integer", "required": true, "generated": true },
+  { "name": "TipoCliente", "type": "character varying", "required": true, "max": 20 },
+  { "name": "Nombres", "type": "character varying", "max": 100 },
+  { "name": "Apellidos", "type": "character varying", "max": 100 },
+  { "name": "RazonSocial", "type": "character varying", "max": 150 },
+  {
+    "name": "TipoIdentificacion",
+    "type": "character varying",
+    "required": true,
+    "max": 10
+  },
+  {
+    "name": "NumeroIdentificacion",
+    "type": "character varying",
+    "required": true,
+    "max": 30
+  },
+  { "name": "Telefono", "type": "character varying", "max": 20 },
+  { "name": "Correo", "type": "character varying", "max": 120 },
+  { "name": "Direccion", "type": "character varying", "max": 300 },
+  { "name": "FechaRegistro", "type": "timestamp without time zone", "required": true },
+  { "name": "Activo", "type": "boolean", "required": true }
+]

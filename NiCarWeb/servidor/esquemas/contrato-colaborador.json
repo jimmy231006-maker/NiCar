@@ -1,0 +1,62 @@
+[
+  {
+    "name": "IdContrato",
+    "type": "integer",
+    "required": true,
+    "generated": true
+  },
+  {
+    "name": "IdUsuario",
+    "type": "integer",
+    "required": true
+  },
+  {
+    "name": "NumeroContrato",
+    "type": "character varying",
+    "required": true,
+    "max": 60
+  },
+  {
+    "name": "TipoContrato",
+    "type": "character varying",
+    "required": true,
+    "max": 30
+  },
+  {
+    "name": "Cargo",
+    "type": "character varying",
+    "required": true,
+    "max": 100
+  },
+  {
+    "name": "FechaInicio",
+    "type": "date",
+    "required": true
+  },
+  {
+    "name": "FechaFin",
+    "type": "date"
+  },
+  {
+    "name": "SalarioBaseNIO",
+    "type": "numeric",
+    "required": true,
+    "minimo": 0.01
+  },
+  {
+    "name": "Observaciones",
+    "type": "character varying",
+    "max": 500
+  },
+  {
+    "name": "Estado",
+    "type": "character varying",
+    "required": true,
+    "max": 20
+  },
+  {
+    "name": "Activo",
+    "type": "boolean",
+    "required": true
+  }
+]\n

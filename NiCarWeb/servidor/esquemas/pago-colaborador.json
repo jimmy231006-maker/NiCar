@@ -1,0 +1,106 @@
+[
+  {
+    "name": "IdPagoColaborador",
+    "type": "integer",
+    "required": true,
+    "generated": true
+  },
+  {
+    "name": "IdUsuario",
+    "type": "integer",
+    "required": true
+  },
+  {
+    "name": "IdContrato",
+    "type": "integer",
+    "required": true
+  },
+  {
+    "name": "TipoPago",
+    "type": "character varying",
+    "required": true,
+    "max": 20
+  },
+  {
+    "name": "Periodo",
+    "type": "character",
+    "required": true,
+    "max": 7
+  },
+  {
+    "name": "FechaPago",
+    "type": "date",
+    "required": true
+  },
+  {
+    "name": "MontoBrutoNIO",
+    "type": "numeric",
+    "required": true,
+    "minimo": 0.01
+  },
+  {
+    "name": "DeduccionINSSNIO",
+    "type": "numeric",
+    "required": true,
+    "minimo": 0
+  },
+  {
+    "name": "AhorroAutorizadoNIO",
+    "type": "numeric",
+    "required": true,
+    "minimo": 0,
+    "default": 0
+  },
+  {
+    "name": "RetencionIRNIO",
+    "type": "numeric",
+    "required": true,
+    "minimo": 0
+  },
+  {
+    "name": "OtrasDeduccionesNIO",
+    "type": "numeric",
+    "required": true,
+    "minimo": 0
+  },
+  {
+    "name": "MontoNetoNIO",
+    "type": "numeric",
+    "required": true,
+    "minimo": 0
+  },
+  {
+    "name": "ComisionUSD",
+    "type": "numeric",
+    "minimo": 0
+  },
+  {
+    "name": "TasaCambio",
+    "type": "numeric",
+    "required": true,
+    "minimo": 0.000001
+  },
+  {
+    "name": "MetodoPagoColaborador",
+    "type": "character varying",
+    "required": true,
+    "max": 20
+  },
+  {
+    "name": "Referencia",
+    "type": "character varying",
+    "required": true,
+    "max": 100
+  },
+  {
+    "name": "RegistradoPor",
+    "type": "integer",
+    "required": true
+  },
+  {
+    "name": "Estado",
+    "type": "character varying",
+    "required": true,
+    "max": 20
+  }
+]

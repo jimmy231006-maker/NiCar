@@ -1,0 +1,6 @@
+[
+  { "name": "IdTipoCosto", "type": "integer", "required": true, "generated": true },
+  { "name": "Nombre", "type": "character varying", "required": true, "max": 80 },
+  { "name": "Descripcion", "type": "character varying", "max": 200 },
+  { "name": "Activo", "type": "boolean", "required": true }
+]

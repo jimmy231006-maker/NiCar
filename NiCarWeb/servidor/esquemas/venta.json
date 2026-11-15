@@ -1,0 +1,116 @@
+[
+  {
+    "name": "IdVenta",
+    "type": "integer",
+    "required": true,
+    "generated": true
+  },
+  {
+    "name": "IdVehiculo",
+    "type": "integer",
+    "required": true
+  },
+  {
+    "name": "IdCliente",
+    "type": "integer",
+    "required": true
+  },
+  {
+    "name": "NumeroComprobante",
+    "type": "character varying",
+    "required": true,
+    "max": 30
+  },
+  {
+    "name": "FechaVenta",
+    "type": "date",
+    "required": true
+  },
+  {
+    "name": "PrecioVenta",
+    "type": "numeric",
+    "required": true
+  },
+  {
+    "name": "Descuento",
+    "type": "numeric",
+    "required": true
+  },
+  {
+    "name": "Total",
+    "type": "numeric",
+    "generated": true
+  },
+  {
+    "name": "Moneda",
+    "type": "character varying",
+    "required": true,
+    "max": 3
+  },
+  {
+    "name": "MetodoPago",
+    "type": "character varying",
+    "required": true,
+    "max": 30
+  },
+  {
+    "name": "ReferenciaPago",
+    "type": "character varying",
+    "max": 80
+  },
+  {
+    "name": "Observaciones",
+    "type": "character varying",
+    "max": 500
+  },
+  {
+    "name": "UsuarioRegistro",
+    "type": "character varying",
+    "max": 80
+  },
+  {
+    "name": "Activa",
+    "type": "boolean",
+    "required": true
+  },
+  {
+    "name": "IdVendedor",
+    "type": "integer"
+  },
+  {
+    "name": "TasaCambio",
+    "type": "numeric"
+  },
+  {
+    "name": "TotalNIO",
+    "type": "numeric"
+  },
+  {
+    "name": "MontoCobradoNIO",
+    "type": "numeric"
+  },
+  {
+    "name": "RedondeoEfectivoNIO",
+    "type": "numeric"
+  },
+  {
+    "name": "RecibidoNIO",
+    "type": "numeric"
+  },
+  {
+    "name": "CambioNIO",
+    "type": "numeric"
+  },
+  {
+    "name": "ComisionUSD",
+    "type": "numeric"
+  },
+  {
+    "name": "PorcentajeComision",
+    "type": "numeric"
+  },
+  {
+    "name": "DetalleCambio",
+    "type": "jsonb"
+  }
+]
