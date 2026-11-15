@@ -14,3 +14,5 @@ services:
         sync: false
       - key: APP_ORIGIN
         sync: false
+      - key: DATABASE_SSL_CERT
+        sync: false
