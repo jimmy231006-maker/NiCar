@@ -1,0 +1,7 @@
+bin/
+obj/
+.vs/
+*.user
+.env
+.env.*
+Database/0[4-7]*.sql

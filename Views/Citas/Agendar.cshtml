@@ -1,0 +1,18 @@
+@model SolicitudVisita
+@{ ViewData["Title"] = "Agendar visita"; }
+<a asp-controller="Vehiculos" asp-action="Details" asp-route-id="@ViewBag.IdVehiculo">Volver al vehículo</a>
+<h1 class="mt-3">Agendar visita</h1>
+<h2 class="h4">@ViewBag.Vehiculo</h2>
+<p>Elegí cuándo querés ver el vehículo. La cita es presencial y no requiere anticipo.</p>
+<form asp-action="Agendar" asp-route-id="@ViewBag.IdVehiculo" method="post" class="col-md-6">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <p>Contacto de la cita: <strong>@User.Identity?.Name</strong></p>
+    <label asp-for="Telefono" class="mt-3">Teléfono</label>
+    <input asp-for="Telefono" type="tel" autocomplete="tel" maxlength="16" required class="form-control" />
+    <span asp-validation-for="Telefono" class="text-danger d-block"></span>
+    <label asp-for="Inicio" class="mt-3">Fecha y hora de Nicaragua</label>
+    <input asp-for="Inicio" asp-format="{0:yyyy-MM-ddTHH:mm}" type="datetime-local" required min="@ViewBag.Minimo" step="3600" class="form-control" />
+    <small>Las visitas comienzan a la hora en punto.</small>
+    <span asp-validation-for="Inicio" class="text-danger d-block"></span>
+    <button type="submit" class="btn btn-primary mt-3">Confirmar visita</button>
+</form>

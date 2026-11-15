@@ -1,0 +1,14 @@
+@model RegistroCliente
+@{ ViewData["Title"] = "Crear cuenta de cliente"; }
+<h1>Crear cuenta de cliente</h1>
+<p>Para agendar una visita debés tener al menos 18 años. La edad se calcula con la fecha de tu cédula.</p>
+<form asp-action="Registro" method="post" class="col-md-6">
+    <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <label asp-for="Nombre">Nombre completo</label><input asp-for="Nombre" class="form-control" autocomplete="name" required maxlength="100" />
+    <label asp-for="Correo">Correo electrónico</label><input asp-for="Correo" class="form-control" type="email" autocomplete="email" required maxlength="50" />
+    <label asp-for="Cedula">Cédula nicaragüense</label><input asp-for="Cedula" class="form-control" placeholder="000-DDMMAA-0000A" required maxlength="16" />
+    <label asp-for="Contrasena">Contraseña (mínimo 12 caracteres)</label><input asp-for="Contrasena" class="form-control" autocomplete="new-password" required minlength="12" maxlength="100" />
+    <label asp-for="Confirmacion">Confirmar contraseña</label><input asp-for="Confirmacion" class="form-control" autocomplete="new-password" required />
+    <button type="submit" class="btn btn-primary mt-3">Crear cuenta</button>
+</form>

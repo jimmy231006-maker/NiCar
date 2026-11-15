@@ -1,0 +1,15 @@
+@model IReadOnlyList<VisitaAgendada>
+@{ ViewData["Title"] = "Agenda de visitas"; }
+<h1>Agenda de visitas</h1>
+@if (Model.Count == 0) { <p>No hay visitas agendadas desde hoy.</p> }
+else
+{
+    <div class="table-responsive"><table class="table">
+    <thead><tr><th>Fecha y hora de Nicaragua</th><th>Vehículo</th><th>Contacto</th><th>Teléfono</th></tr></thead>
+    <tbody>
+    @foreach (var cita in Model)
+    {
+        <tr><td>@cita.Inicio.ToString("dd/MM/yyyy HH:mm")</td><td>@cita.Vehiculo</td><td>@cita.Nombre</td><td>@cita.Telefono</td></tr>
+    }
+    </tbody></table></div>
+}

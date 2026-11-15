@@ -1,0 +1,154 @@
+@model NiCar.Models.Vehiculo
+
+@{
+    ViewData["Title"] = "Editar vehículo";
+}
+
+<h2>Editar vehículo</h2>
+<p class="text-muted">Actualización de información del vehículo.</p>
+
+<form asp-action="Edit" method="post">
+
+    <input type="hidden" asp-for="IdVehiculo" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <h5>Identificación</h5>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label asp-for="IdentificadorUnico" class="form-label">Código interno</label>
+            <input asp-for="IdentificadorUnico" class="form-control" />
+            <span asp-validation-for="IdentificadorUnico" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label asp-for="IdModelo" class="form-label">Marca y modelo</label>
+            <select asp-for="IdModelo" asp-items="ViewBag.IdModelo" class="form-select">
+                <option value="">Seleccione un modelo</option>
+            </select>
+            <span asp-validation-for="IdModelo" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label asp-for="Anio" class="form-label">Año</label>
+            <input asp-for="Anio" type="number" class="form-control" />
+            <span asp-validation-for="Anio" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label asp-for="VIN" class="form-label">VIN</label>
+            <input asp-for="VIN" class="form-control" maxlength="17" />
+            <span asp-validation-for="VIN" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label asp-for="NumeroChasis" class="form-label">Número de chasis</label>
+            <input asp-for="NumeroChasis" class="form-control" />
+            <span asp-validation-for="NumeroChasis" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label asp-for="Placa" class="form-label">Placa (opcional)</label>
+            <input asp-for="Placa" class="form-control" />
+            <span asp-validation-for="Placa" class="text-danger"></span>
+        </div>
+    </div>
+
+    <h5>Características</h5>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label asp-for="Version" class="form-label">Versión</label>
+            <input asp-for="Version" class="form-control" />
+            <span asp-validation-for="Version" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label asp-for="ColorExterior" class="form-label">Color exterior</label>
+            <input asp-for="ColorExterior" class="form-control" />
+            <span asp-validation-for="ColorExterior" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label asp-for="ColorInterior" class="form-label">Color interior</label>
+            <input asp-for="ColorInterior" class="form-control" />
+            <span asp-validation-for="ColorInterior" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label asp-for="Transmision" class="form-label">Transmisión</label>
+            <select asp-for="Transmision" class="form-select">
+                <option>Automática</option>
+                <option>Manual</option>
+                <option>CVT</option>
+            </select>
+            <span asp-validation-for="Transmision" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label asp-for="Traccion" class="form-label">Tracción</label>
+            <select asp-for="Traccion" class="form-select">
+                <option>4x2</option>
+                <option>4x4</option>
+                <option>AWD</option>
+                <option>FWD</option>
+                <option>RWD</option>
+            </select>
+            <span asp-validation-for="Traccion" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label asp-for="Combustible" class="form-label">Combustible</label>
+            <select asp-for="Combustible" class="form-select">
+                <option>Gasolina</option>
+                <option>Diésel</option>
+                <option>Híbrido</option>
+                <option>Eléctrico</option>
+                <option>Híbrido enchufable</option>
+            </select>
+            <span asp-validation-for="Combustible" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label asp-for="TipoCarroceria" class="form-label">Carrocería</label>
+            <select asp-for="TipoCarroceria" class="form-select">
+                <option>Sedán</option>
+                <option>SUV</option>
+                <option>Pickup</option>
+                <option>Hatchback</option>
+                <option>Camioneta</option>
+                <option>Coupe</option>
+                <option>Van</option>
+            </select>
+            <span asp-validation-for="TipoCarroceria" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label asp-for="Kilometraje" class="form-label">Kilometraje</label>
+            <input asp-for="Kilometraje" type="number" min="0" class="form-control" />
+            <span asp-validation-for="Kilometraje" class="text-danger"></span>
+        </div>
+    </div>
+
+    <h5>Publicación en el catálogo</h5>
+    <div class="row">
+        <div class="col-md-4 mb-3"><label asp-for="PrecioOferta" class="form-label">Precio de venta (USD)</label><input asp-for="PrecioOferta" class="form-control" type="number" min="0" step="0.01"/><span asp-validation-for="PrecioOferta" class="text-danger"></span></div>
+        <div class="col-md-8 mb-3"><label asp-for="ImagenUrl" class="form-label">URL de imagen</label><input asp-for="ImagenUrl" class="form-control" placeholder="https://..."/><span asp-validation-for="ImagenUrl" class="text-danger"></span></div>
+        <div class="col-md-6 mb-3"><label asp-for="Ubicacion" class="form-label">Departamento / ciudad</label><input asp-for="Ubicacion" class="form-control"/><span asp-validation-for="Ubicacion" class="text-danger"></span></div>
+    </div>
+    <h5>Observaciones</h5>
+
+    <div class="mb-3">
+        <textarea asp-for="Observaciones" class="form-control" rows="3"></textarea>
+        <span asp-validation-for="Observaciones" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

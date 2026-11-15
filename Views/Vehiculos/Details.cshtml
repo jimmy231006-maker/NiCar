@@ -1,0 +1,8 @@
+@model NiCar.Models.Vehiculo
+@{ ViewData["Title"] = $"{Model.Anio} {Model.Modelo?.Marca?.Nombre} {Model.Modelo?.Nombre}"; }
+<div class="container vehicle-detail"><a asp-controller="Home" asp-action="Index" class="back-link">← Volver al catálogo</a><div class="detail-grid mt-4">
+ <div class="detail-photo">@if (!string.IsNullOrWhiteSpace(Model.ImagenUrl)) { <img src="@Model.ImagenUrl" alt="@ViewData["Title"]"/> } else { <div class="photo-placeholder"><span>NiCar</span><small>Imagen disponible próximamente</small></div> }</div>
+ <section class="detail-panel"><p class="eyebrow">VEHÍCULO DISPONIBLE</p><h1>@Model.Anio @Model.Modelo?.Marca?.Nombre @Model.Modelo?.Nombre</h1><div class="detail-price">@(Model.PrecioOferta.HasValue ? $"USD {Model.PrecioOferta.Value:N0}" : "Consultar precio")</div><p class="detail-location">Nicaragua · @(Model.Ubicacion ?? "Ubicación por confirmar")</p>
+  <div class="spec-list"><div><span>Kilometraje</span><strong>@Model.Kilometraje.ToString("N0") km</strong></div><div><span>Transmisión</span><strong>@Model.Transmision</strong></div><div><span>Combustible</span><strong>@Model.Combustible</strong></div><div><span>Carrocería</span><strong>@Model.TipoCarroceria</strong></div><div><span>Tracción</span><strong>@Model.Traccion</strong></div><div><span>Color</span><strong>@Model.ColorExterior</strong></div></div>
+  <div class="contact-note"><p>Conocé este vehículo en persona.</p><a class="btn btn-primary" asp-controller="Citas" asp-action="Agendar" asp-route-id="@Model.IdVehiculo">Agendar visita</a></div>
+ </section></div></div>

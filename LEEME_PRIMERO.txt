@@ -1,0 +1,20 @@
+NiCar — ASP.NET Core MVC, .NET 8 y PostgreSQL en Supabase
+
+Organización MediRed · Proyecto NiCar (jtlthioggrowctxiynxe)
+La base utiliza el esquema privado nicar. Los archivos 04–07 son del sistema SQL Server anterior. El esquema PostgreSQL se encuentra en Database/NiCar_PostgreSQL.sql.
+
+Abra esta carpeta (la que contiene NiCar.csproj) en VS Code. En su terminal PowerShell, copie la cadena Npgsql al portapapeles y ejecute:
+
+  dotnet user-secrets set "ConnectionStrings:DefaultConnection" (Get-Clipboard).Trim()
+  Set-Clipboard -Value " "
+
+En producción use la variable ConnectionStrings__DefaultConnection. Obtenga el host y usuario exactos en Connect > Session pooler del proyecto NiCar.
+
+Ejemplo de secretos de usuario:
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=HOST_DEL_POOLER;Port=5432;Database=postgres;Username=USUARIO_DEL_POOLER;Password=CONTRASEÑA;SSL Mode=VerifyFull"
+  }
+}
+
+Ejecute dotnet restore y pulse F5 con la configuración «NiCar web». Render utiliza el Dockerfile y render.yaml de esta carpeta. El catálogo público se abre en la portada. Víctor y Jimmy pueden gestionar las cuentas del personal en Usuarios, incluida la creación de vendedores. El primer acceso requiere cambiar la contraseña temporal.

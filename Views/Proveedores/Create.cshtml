@@ -1,0 +1,15 @@
+@model NiCar.Models.Proveedor
+@{ ViewData["Title"] = ViewContext.RouteData.Values["action"]?.ToString()=="Edit" ? "Editar proveedor" : "Nuevo proveedor"; }
+<h2>@ViewData["Title"]</h2><form method="post">@Html.AntiForgeryToken()<input asp-for="IdProveedor" type="hidden"/>
+<div asp-validation-summary="All" class="text-danger"></div><div class="row g-3">
+<div class="col-md-4"><label asp-for="TipoProveedor" class="form-label"></label><select asp-for="TipoProveedor" class="form-select"><option value="">Seleccione</option><option>Empresa</option><option>Persona</option></select></div>
+<div class="col-md-8"><label asp-for="NombreProveedor" class="form-label"></label><input asp-for="NombreProveedor" class="form-control" maxlength="150"/></div>
+<div class="col-md-4"><label asp-for="IdentificacionFiscal" class="form-label"></label><input asp-for="IdentificacionFiscal" class="form-control" maxlength="30"/></div>
+<div class="col-md-4"><label asp-for="Pais" class="form-label"></label><input asp-for="Pais" class="form-control" maxlength="60"/></div>
+<div class="col-md-4"><label asp-for="Ciudad" class="form-label"></label><input asp-for="Ciudad" class="form-control" maxlength="80"/></div>
+<div class="col-md-6"><label asp-for="Direccion" class="form-label"></label><input asp-for="Direccion" class="form-control" maxlength="250"/></div>
+<div class="col-md-3"><label asp-for="Telefono" class="form-label"></label><input asp-for="Telefono" class="form-control" maxlength="20"/></div>
+<div class="col-md-3"><label asp-for="Correo" class="form-label"></label><input asp-for="Correo" class="form-control" maxlength="120"/></div>
+<div class="col-md-6"><label asp-for="Contacto" class="form-label"></label><input asp-for="Contacto" class="form-control" maxlength="120"/></div>
+<div class="col-md-6"><label asp-for="Observaciones" class="form-label"></label><input asp-for="Observaciones" class="form-control" maxlength="500"/></div>
+</div><div class="mt-3"><button class="btn btn-primary">Guardar</button> <a asp-action="Index" class="btn btn-secondary">Cancelar</a></div></form>

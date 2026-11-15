@@ -1,0 +1,81 @@
+@model IEnumerable<NiCar.Models.Vehiculo>
+
+@{
+    ViewData["Title"] = "Inventario de vehículos";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>Inventario de vehículos nuevos</h2>
+        <p class="text-muted">Administración del inventario del concesionario.</p>
+    </div>
+
+    <a asp-action="Create" class="btn btn-primary">
+        + Registrar vehículo
+    </a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Código</th>
+                <th>Marca</th>
+                <th>Modelo</th>
+                <th>Año</th>
+                <th>Versión</th>
+                <th>VIN</th>
+                <th>Chasis</th>
+                <th>Placa</th>
+                <th>Matrícula</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var vehiculo in Model)
+            {
+                <tr>
+                    <td>@vehiculo.IdentificadorUnico</td>
+                    <td>@vehiculo.Modelo?.Marca?.Nombre</td>
+                    <td>@vehiculo.Modelo?.Nombre</td>
+                    <td>@vehiculo.Anio</td>
+                    <td>@vehiculo.Version</td>
+                    <td>@(vehiculo.VIN ?? "Pendiente")</td>
+                    <td>@(vehiculo.NumeroChasis ?? "Pendiente")</td>
+                    <td>@(vehiculo.Placa ?? "Sin placa")</td>
+                    <td>@vehiculo.EstadoMatricula</td>
+                    <td>
+                        @if (vehiculo.Activo)
+                        {
+                            <span class="badge bg-success">Activo</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Inactivo</span>
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Edit"
+                           asp-route-id="@vehiculo.IdVehiculo"
+                           class="btn btn-warning btn-sm">
+                            Editar
+                        </a>
+
+                        <form asp-action="CambiarEstado"
+                              asp-route-id="@vehiculo.IdVehiculo"
+                              method="post"
+                              class="d-inline">
+
+                            <button type="submit"
+                                    class="btn btn-sm @(vehiculo.Activo ? "btn-danger" : "btn-success")">
+                                @(vehiculo.Activo ? "Desactivar" : "Activar")
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

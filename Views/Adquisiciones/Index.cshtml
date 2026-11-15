@@ -1,0 +1,77 @@
+@model IEnumerable<NiCar.Models.AdquisicionVehiculo>
+
+@{
+    ViewData["Title"] = "Adquisiciones";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2>Adquisiciones de vehículos</h2>
+        <p class="text-muted">Control de compras del concesionario.</p>
+    </div>
+
+    <a asp-action="Create" class="btn btn-primary">
+        + Registrar adquisición
+    </a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Vehículo</th>
+                <th>Proveedor</th>
+                <th>Fecha</th>
+                <th>Precio de compra</th>
+                <th>Moneda</th>
+                <th>Tasa de cambio</th>
+                <th>Total en córdobas</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var adquisicion in Model)
+            {
+                <tr>
+                    <td>@adquisicion.IdAdquisicion</td>
+
+                    <td>
+                        @adquisicion.Vehiculo?.IdentificadorUnico
+                        -
+                        @adquisicion.Vehiculo?.Modelo?.Nombre
+                    </td>
+
+                    <td>@adquisicion.Proveedor?.NombreProveedor</td>
+
+                    <td>
+                        @adquisicion.FechaAdquisicion.ToString("dd/MM/yyyy")
+                    </td>
+
+                    <td>
+                        @adquisicion.PrecioCompra.ToString("N2")
+                    </td>
+
+                    <td>@adquisicion.Moneda</td>
+
+                    <td>
+                        @adquisicion.TasaCambio.ToString("N4")
+                    </td>
+
+                    <td>
+                        @adquisicion.PrecioCompraNIO.ToString("N2") C$
+                    </td>
+
+                    <td>
+                        <a asp-action="Edit"
+                           asp-route-id="@adquisicion.IdAdquisicion"
+                           class="btn btn-sm btn-warning">
+                            Editar
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
