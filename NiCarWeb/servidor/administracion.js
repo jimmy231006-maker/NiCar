@@ -30,12 +30,21 @@ const permisosLectura = {
   Financiera: administradores,
   ContratoColaborador: administradores,
   PagoColaborador: administradores,
+  CuotaCredito: administradores,
+  ContratoVenta: [...administradores, 'Vendedor'],
+  PagoVenta: [...administradores, 'Vendedor'],
   TipoCosto: administradores,
   CostoVehiculo: administradores,
   AdquisicionVehiculo: administradores,
   Venta: [...administradores, 'Vendedor']
 };
 import { validarRelaciones } from './relaciones.js';
+import {
+  accionesModulo,
+  exigirAccionModulo,
+  puedeConsultarModulo,
+  puedeEditarModulo
+} from './permisos.js';
 
 export async function atenderAdministracion(solicitud, respuesta, ruta, usuario) {
   if (ruta === '/api/modulos' && solicitud.method === 'GET') {
@@ -45,21 +54,24 @@ export async function atenderAdministracion(solicitud, respuesta, ruta, usuario)
     responderJson(
       respuesta,
       Object.entries(permisosLectura)
-        .filter(([, roles]) => roles.includes(usuario.Rol))
+        .filter(([tabla]) => puedeConsultarModulo(usuario.Rol, tabla))
         .map(([tabla]) => ({
           table: tabla,
-          fields: obtenerCampos(tabla).filter(
+          fields: [...obtenerCampos(tabla), ...(tabla === 'ContratoVenta'
+            ? [{ name:'Estado', type:'character varying', required:true, max:20 }]
+            : [])].filter(
             (registro) => !['Activo', 'Activa'].includes(registro.name) &&
               !(registro.name === 'IdVendedor' && usuario.Rol === 'Vendedor')
           ),
-          options: opciones,
-          writable: (tabla === 'Cliente'
-            ? personal
-            : tabla === 'Venta'
-              ? [...administradores, 'Vendedor']
-              : administradores
-          ).includes(usuario.Rol),
-          editable: !['Venta','PagoColaborador'].includes(tabla)
+          options: {
+            ...opciones,
+            ...(tabla === 'PagoVenta' ? { MetodoPago: ['Efectivo', 'Transferencia', 'Tarjeta', 'Cheque'] } : {}),
+            ...(tabla === 'ContratoVenta' ? { Estado: ['Borrador', 'Firmado'] } : {})
+          },
+          actions: accionesModulo(usuario.Rol, tabla),
+          writable: accionesModulo(usuario.Rol, tabla).some(accion => ['c', 'u'].includes(accion)),
+          editable: puedeEditarModulo(usuario.Rol, tabla, 'u'),
+          deletable: puedeEditarModulo(usuario.Rol, tabla, 'd')
         }))
     );
     return true;
@@ -69,7 +81,7 @@ export async function atenderAdministracion(solicitud, respuesta, ruta, usuario)
     return false;
   }
   const [, tabla, codigo] = coincidencia;
-  exigirRol(usuario, permisosLectura[tabla]);
+  exigirAccionModulo(usuario, tabla, 'r');
   if (tabla === 'PagoColaborador') {
     if (solicitud.method === 'GET') {
       const filas = await conexion.query(
@@ -88,20 +100,48 @@ export async function atenderAdministracion(solicitud, respuesta, ruta, usuario)
   }
   const repositorio = crearRepositorio(conexion, tabla);
   if (solicitud.method === 'GET') {
-    responderJson(respuesta, await repositorio.listar());
+    if (usuario.Rol === 'Vendedor' && tabla === 'Cliente') {
+      const filas = await conexion.query(
+        `SELECT DISTINCT c.* FROM nicar."Cliente" c
+         JOIN nicar."Usuario" u ON u."IdCliente"=c."IdCliente"
+         WHERE EXISTS (SELECT 1 FROM nicar."Venta" v WHERE v."IdCliente"=c."IdCliente" AND v."IdVendedor"=$1)
+            OR EXISTS (SELECT 1 FROM nicar."Cita" ci WHERE ci."IdUsuario"=u."IdUsuario" AND ci."IdVendedor"=$1)
+         ORDER BY c."IdCliente" DESC LIMIT 1000`, [usuario.IdUsuario]
+      );
+      responderJson(respuesta, filas.rows);
+    } else if (usuario.Rol === 'Vendedor' && ['Venta','ContratoVenta','PagoVenta'].includes(tabla)) {
+      const consultas = {
+        Venta: `SELECT * FROM nicar."Venta" WHERE "IdVendedor"=$1 ORDER BY "IdVenta" DESC LIMIT 1000`,
+        ContratoVenta: `SELECT c.* FROM nicar."ContratoVenta" c JOIN nicar."Venta" v USING ("IdVenta") WHERE v."IdVendedor"=$1 ORDER BY c."IdContratoVenta" DESC LIMIT 1000`,
+        PagoVenta: `SELECT p.* FROM nicar."PagoVenta" p JOIN nicar."Venta" v USING ("IdVenta") WHERE v."IdVendedor"=$1 ORDER BY p."IdPagoVenta" DESC LIMIT 1000`
+      };
+      const filas = await conexion.query(consultas[tabla], [usuario.IdUsuario]);
+      responderJson(respuesta, filas.rows);
+    } else {
+      responderJson(respuesta, await repositorio.listar());
+    }
     return true;
   }
-  exigirRol(
-    usuario,
-    tabla === 'Cliente'
-      ? personal
-      : tabla === 'Venta'
-        ? [...administradores, 'Vendedor']
-        : administradores
-  );
+  const accionPorMetodo = { POST: 'c', PUT: 'u', DELETE: 'd' };
+  const accion = accionPorMetodo[solicitud.method];
+  if (!accion) return false;
+  exigirAccionModulo(usuario, tabla, accion);
+  if (tabla === 'CuotaCredito') {
+    rechazar('La tabla de amortización bancaria es de consulta y no se modifica desde este módulo.', 405);
+  }
+  if (tabla === 'PagoVenta' && solicitud.method === 'PUT') {
+    rechazar('Los pagos de una venta se anulan conservando su historial.');
+  }
+  if (tabla === 'ContratoVenta' && solicitud.method === 'PUT' && codigo) {
+    const contrato = await repositorio.buscar(codigo);
+    if (contrato?.Estado === 'Firmado') rechazar('Un contrato firmado conserva el documento original.');
+  }
   if (solicitud.method === 'DELETE') {
     if (!codigo || tabla === 'Venta') {
       rechazar('Esta operación requiere conservar el historial.');
+    }
+    if (['PagoVenta','ContratoVenta'].includes(tabla) && !administradores.includes(usuario.Rol)) {
+      rechazar('Solo administración puede anular contratos o pagos de ventas.', 403);
     }
     await repositorio.cambiarEstado(codigo);
     responderJson(respuesta, { message: 'Estado actualizado.' });
@@ -129,6 +169,13 @@ export async function atenderAdministracion(solicitud, respuesta, ruta, usuario)
     'MontoFinanciadoUSD','PagoMensualUSD','TotalInteresesUSD','TotalContratoUSD',
     'TasaMoraAnual','PlazoMeses','FechaPrimerPago']) delete formulario[clave];
   const datos = validarDatos(tabla, formulario, solicitud.method === 'POST');
+  if (tabla === 'ContratoVenta') {
+    datos.Estado = formulario.Estado || 'Borrador';
+    if (!['Borrador','Firmado'].includes(datos.Estado)) rechazar('Seleccioná un estado válido para el contrato.');
+  }
+  if (['ContratoVenta','PagoVenta'].includes(tabla) && solicitud.method === 'POST') {
+    datos.RegistradoPor = usuario.IdUsuario;
+  }
   const resultado = await ejecutarTransaccion(async (baseDatos) => {
     const repositorioTransaccion = crearRepositorio(baseDatos, tabla);
     if (codigo) {
@@ -136,11 +183,55 @@ export async function atenderAdministracion(solicitud, respuesta, ruta, usuario)
       if (!registro) {
         rechazar('Registro no encontrado.', 404);
       }
+      if (tabla === 'Cliente' && usuario.Rol === 'Vendedor') {
+        const acceso = await baseDatos.query(
+          `SELECT EXISTS (
+             SELECT 1 FROM nicar."Venta" WHERE "IdCliente"=$1 AND "IdVendedor"=$2
+             UNION ALL
+             SELECT 1 FROM nicar."Cita" ci JOIN nicar."Usuario" u USING ("IdUsuario")
+             WHERE u."IdCliente"=$1 AND ci."IdVendedor"=$2
+           ) AS permitido`,
+          [codigo, usuario.IdUsuario]
+        );
+        if (!acceso.rows[0]?.permitido) rechazar('Solo podés actualizar clientes que atendés.', 403);
+      }
     } else {
       if (['Cliente', 'Proveedor', 'Vehiculo'].includes(tabla)) {
         datos.FechaRegistro = fechaDeHoy() + 'T12:00:00';
       }
       if (tabla === 'Vehiculo') datos.Estado = 'Disponible';
+    }
+    if (['ContratoVenta','PagoVenta'].includes(tabla)) {
+      const ventaRelacionada = await baseDatos.query(
+        `SELECT "IdVendedor",coalesce("Total","PrecioVenta"-"Descuento") AS "Total","Activa" FROM nicar."Venta"
+         WHERE "IdVenta"=$1 FOR UPDATE`, [datos.IdVenta]
+      );
+      const venta = ventaRelacionada.rows[0];
+      if (!venta?.Activa) rechazar('La venta relacionada no está activa.');
+      if (usuario.Rol === 'Vendedor' && venta.IdVendedor !== usuario.IdUsuario) {
+        rechazar('Solo podés gestionar contratos y pagos de tus propias ventas.', 403);
+      }
+      if (tabla === 'PagoVenta') {
+        const acumulado = await baseDatos.query(
+          `SELECT coalesce(sum(CASE WHEN "Moneda"='USD' THEN "Monto"
+            ELSE "Monto"/"TasaCambio" END),0)::numeric AS total
+           FROM nicar."PagoVenta" WHERE "IdVenta"=$1 AND "Estado"='Registrado'`,
+          [datos.IdVenta]
+        );
+        const importeUSD = datos.Moneda === 'USD'
+          ? Number(datos.Monto)
+          : Number(datos.Monto) / Number(datos.TasaCambio || 36.60);
+        if (Number(acumulado.rows[0].total) + importeUSD > Number(venta.Total) + 0.005) {
+          rechazar('El pago superaría el total de la venta.');
+        }
+        if (datos.MetodoPago !== 'Efectivo' && !String(datos.Referencia || '').trim()) {
+          rechazar('Transferencias, tarjetas y cheques requieren referencia.');
+        }
+        if (!['Efectivo','Transferencia','Tarjeta','Cheque'].includes(datos.MetodoPago)) {
+          rechazar('Seleccioná una forma de pago válida para este registro.');
+        }
+        datos.TasaCambio = datos.TasaCambio || 36.60;
+      }
     }
     if (tabla === 'Vehiculo') {
       datos.EstadoMatricula = datos.Placa ? 'Matriculado' : 'Pendiente';

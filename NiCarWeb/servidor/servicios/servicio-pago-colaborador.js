@@ -29,7 +29,7 @@ export class ServicioPagoColaborador {
       const pendiente = validaciones.centavos(ventas.rows[0].Ganado) - validaciones.centavos(pagos.rows[0].Pagado);
       if (pendiente <= 0n) rechazar('No hay comisión pendiente para ese mes.');
       comisionUSD = Number(pendiente) / 100;
-      const cambio = TasaCambio.oficial(); tasa = cambio.valor; bruto = cambio.convertirACordobas(pendiente, 'USD');
+      const cambio = TasaCambio.comercial(); tasa = cambio.valor; bruto = cambio.convertirACordobas(pendiente, 'USD');
     }
     const ahorro = validaciones.centavos(datos.AhorroAutorizadoNIO || '0');
     const otras = validaciones.centavos(datos.OtrasDeduccionesNIO || '0');

@@ -67,6 +67,31 @@ export async function mostrarUsuarios() {
     ])
   );
 }
+
+function editarCuenta(fila) {
+  const roles = estado.usuario.Rol === 'SuperAdministrador'
+    ? ['Administrador', 'Vendedor', 'Recepcionista', 'Bodega']
+    : ['Vendedor', 'Recepcionista', 'Bodega'];
+  abrirFormularioModal(
+    'Editar cuenta',
+    [
+      crearCampo('Nombre', {
+        required: true, max: 100, label: 'Nombre completo', value: fila.NombreCompleto
+      }),
+      crearCampo('Correo', {
+        required: true, type: 'email', max: 50, value: fila.NombreUsuario
+      }),
+      crearCampo('Rol', {
+        required: true, choices: roles, value: fila.Rol
+      })
+    ],
+    async (datos) => {
+      await consultarApi('/usuarios/' + fila.IdUsuario, 'PUT', datos);
+      await mostrarUsuarios();
+    }
+  );
+}
+
 export async function mostrarAuditoria() {
   mostrarTitulo('Auditoría de accesos');
   contenido.append(crearElemento('a', { href:'/api/auditoria/pdf',class:'boton',download:'NiCar_Logs_Acceso.pdf' }, 'Descargar logs en PDF'));

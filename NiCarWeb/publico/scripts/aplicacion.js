@@ -81,6 +81,17 @@ async function mostrarPagina() {
   try {
     await actualizarUsuario();
     actualizarMenu();
+    if (estado.usuario?.Rol === 'Cliente') {
+      const avisos = await consultarApi('/citas/avisos');
+      for (const aviso of avisos) {
+        const inicio = String(aviso.Inicio).replace(' ', 'T');
+        const fecha = new Date(/[zZ]|[+-]\d\d:\d\d$/.test(inicio) ? inicio : inicio + '-06:00');
+        alert('Tu cita del ' + fecha.toLocaleString('es-NI', {
+          dateStyle: 'long', timeStyle: 'short', timeZone: 'America/Managua'
+        }) + ' fue cancelada. Motivo: ' + aviso.MotivoCancelacion);
+        await consultarApi('/citas/avisos/' + aviso.IdCita, 'PUT', {});
+      }
+    }
     const [ruta, codigo] = location.hash.slice(1).split('/');
     if (estado.usuario?.DebeCambiarContrasena && ruta !== 'contrasena') {
       location.hash = '#contrasena';

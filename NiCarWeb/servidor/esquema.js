@@ -6,6 +6,9 @@ import LogAcceso from './esquemas/log-acceso.json' with { type: 'json' };
 import Financiera from './esquemas/financiera.json' with { type: 'json' };
 import ContratoColaborador from './esquemas/contrato-colaborador.json' with { type: 'json' };
 import PagoColaborador from './esquemas/pago-colaborador.json' with { type: 'json' };
+import CuotaCredito from './esquemas/cuota-credito.json' with { type: 'json' };
+import ContratoVenta from './esquemas/contrato-venta.json' with { type: 'json' };
+import PagoVenta from './esquemas/pago-venta.json' with { type: 'json' };
 import Marca from './esquemas/marca.json' with { type: 'json' };
 import Modelo from './esquemas/modelo.json' with { type: 'json' };
 import Proveedor from './esquemas/proveedor.json' with { type: 'json' };
@@ -23,6 +26,9 @@ export default {
   Financiera,
   ContratoColaborador,
   PagoColaborador,
+  CuotaCredito,
+  ContratoVenta,
+  PagoVenta,
   Marca,
   Modelo,
   Proveedor,

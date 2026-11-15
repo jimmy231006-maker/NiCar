@@ -1,6 +1,6 @@
 import configuracionMoneda from '../configuracion/moneda.json' with { type: 'json' };
 
-export const tasaCambioOficial = Number(configuracionMoneda.tasaOficial.valor);
+export const tasaCambioComercial = Number(configuracionMoneda.tasaComercial);
 export function crearElemento(etiqueta, atributos = {}, ...hijos) {
   const elemento = document.createElement(etiqueta);
   for (const [clave, valor] of Object.entries(atributos)) {
@@ -36,7 +36,7 @@ export function mostrarTitulo(titulo, descripcion) {
 export function formatearPrecio(valor) {
   if (valor == null) return 'Consultar precio';
   const cordobas = new Intl.NumberFormat('es-NI', { style: 'currency', currency: 'NIO' })
-    .format(Number(valor) * tasaCambioOficial);
+    .format(Number(valor) * tasaCambioComercial);
   const dolares = new Intl.NumberFormat('es-NI', { style: 'currency', currency: 'USD' })
     .format(valor);
   return cordobas + ' · ' + dolares;

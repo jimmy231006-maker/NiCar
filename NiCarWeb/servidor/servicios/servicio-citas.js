@@ -17,6 +17,7 @@ export class ServicioCitas {
     const vendedor = usuario.Rol === 'Vendedor' ? usuario.IdUsuario : null;
     const resultado = await this.#baseDatos.query(
       `SELECT c."IdCita",c."Nombre",c."Telefono",c."Inicio",c."Fin",c."Estado",
+        c."MotivoCancelacion",
         u."NombreCompleto" AS "Vendedor",
         concat(b."Nombre",' ',m."Nombre",' ',v."Anio") AS "Vehiculo"
        FROM nicar."Cita" c JOIN nicar."Vehiculo" v USING ("IdVehiculo")
@@ -27,6 +28,48 @@ export class ServicioCitas {
       [cliente,vendedor]
     );
     return resultado.rows;
+  }
+
+  async crear(datos, usuario = null) {
+    validaciones.validarCita(datos);
+    const vehiculo = await this.#baseDatos.query(
+      `SELECT "Activo","Estado" FROM nicar."Vehiculo"
+       WHERE "IdVehiculo"=$1 FOR SHARE`,
+      [Number(datos.IdVehiculo)]
+    );
+    if (!vehiculo.rows[0]?.Activo || vehiculo.rows[0].Estado !== 'Disponible') {
+      rechazar('El vehículo ya no está disponible.');
+    }
+    let nombre = String(datos.Nombre || '').trim();
+    let fechaNacimiento;
+    let idUsuario = null;
+    let telefono = datos.Telefono;
+    if (usuario?.Rol === 'Cliente') {
+      const cuenta = await this.#baseDatos.query(
+        `SELECT "NombreCompleto","Nacimiento","Telefono" FROM nicar."Usuario" u
+         JOIN nicar."Cliente" c ON c."IdCliente"=u."IdCliente"
+         WHERE u."IdUsuario"=$1 AND u."Rol"='Cliente' AND u."Activo" AND c."Activo"`,
+        [usuario.IdUsuario]
+      );
+      if (!cuenta.rows[0]) rechazar('La cuenta de cliente no está activa.', 403);
+      nombre = cuenta.rows[0].NombreCompleto;
+      fechaNacimiento = cuenta.rows[0].Nacimiento;
+      telefono = datos.Telefono || cuenta.rows[0].Telefono;
+      idUsuario = usuario.IdUsuario;
+    } else {
+      validaciones.validarNombre(nombre);
+      const persona = validaciones.obtenerNacimiento(datos.Cedula);
+      if (persona.age < 18) rechazar('Para agendar se requiere ser mayor de edad.');
+      fechaNacimiento = persona.birth;
+    }
+    validaciones.validarTelefono(telefono);
+    const resultado = await this.#baseDatos.query(
+      `INSERT INTO nicar."Cita"
+       ("IdVehiculo","Nombre","Telefono","Inicio","IdUsuario","FechaNacimientoReserva","Cupo")
+       VALUES ($1,$2,$3,$4,$5,$6,1) RETURNING "IdCita","Inicio","IdVendedor"`,
+      [Number(datos.IdVehiculo),nombre,telefono,datos.Inicio.replace('T',' '),idUsuario,fechaNacimiento]
+    );
+    return resultado.rows[0];
   }
 
   async obtenerCliente(codigo, usuario) {
@@ -46,6 +89,26 @@ export class ServicioCitas {
     };
   }
 
+  async avisosCliente(usuario) {
+    const resultado = await this.#baseDatos.query(
+      `SELECT "IdCita", "Inicio", "MotivoCancelacion"
+       FROM nicar."Cita"
+       WHERE "IdUsuario"=$1 AND "Estado"='Cancelada'
+         AND NOT "AvisoClienteLeido" AND "CanceladaPor" IS NOT NULL
+       ORDER BY "Inicio" DESC`,
+      [usuario.IdUsuario]
+    );
+    return resultado.rows;
+  }
+
+  async marcarAvisoLeido(codigo, usuario) {
+    await this.#baseDatos.query(
+      `UPDATE nicar."Cita" SET "AvisoClienteLeido"=true,"AvisoLeidoEn"=now()
+       WHERE "IdCita"=$1 AND "IdUsuario"=$2 AND "Estado"='Cancelada'`,
+      [codigo, usuario.IdUsuario]
+    );
+  }
+
   async actualizar(codigo, datos, usuario, cancelar = false) {
     const resultado = await this.#baseDatos.query(
       'SELECT * FROM nicar."Cita" WHERE "IdCita"=$1 FOR UPDATE',[codigo]
@@ -57,7 +120,22 @@ export class ServicioCitas {
     }
     if (cita.Estado !== 'Pendiente') rechazar('La cita ya está cerrada.');
     if (cancelar) {
-      await this.#baseDatos.query('UPDATE nicar."Cita" SET "Estado"=\'Cancelada\' WHERE "IdCita"=$1',[codigo]);
+      const esAdministrador = administradores.includes(usuario.Rol);
+      if (esAdministrador && !String(datos.MotivoCancelacion || '').trim()) {
+        rechazar('Indicá el motivo de la cancelación.');
+      }
+      if (!esAdministrador && usuario.Rol !== 'Cliente') {
+        rechazar('Solo administración puede cancelar la cita de un cliente.');
+      }
+      const motivo = esAdministrador
+        ? String(datos.MotivoCancelacion).trim()
+        : 'Cancelada por el cliente.';
+      if (motivo.length > 500) rechazar('El motivo no puede superar 500 caracteres.');
+      await this.#baseDatos.query(
+        `UPDATE nicar."Cita" SET "Estado"='Cancelada',"MotivoCancelacion"=$1,
+         "CanceladaPor"=$2,"AvisoClienteLeido"=$3,"AvisoLeidoEn"=NULL WHERE "IdCita"=$4`,
+        [motivo, usuario.IdUsuario, !esAdministrador, codigo]
+      );
     } else if (datos.Estado === 'Atendida' && personal.includes(usuario.Rol)) {
       if (new Date(cita.Inicio+'-06:00').getTime()>Date.now()) rechazar('La visita todavía no comienza.');
       await this.#baseDatos.query('UPDATE nicar."Cita" SET "Estado"=\'Atendida\' WHERE "IdCita"=$1',[codigo]);

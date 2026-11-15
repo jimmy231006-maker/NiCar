@@ -10,6 +10,7 @@ import { Validaciones } from '../publico/clases/validaciones.js';
 import { crearPago } from '../servidor/pagos/crear-pago.js';
 import { crearVehiculo } from '../servidor/modelos/crear-vehiculo.js';
 import { AmortizadorFrances } from '../publico/clases/amortizador-frances.js';
+import { accionesModulo, exigirAccionModulo } from '../servidor/permisos.js';
 
 test('los contratos y clases abstractas no se instancian directamente', () => {
   assert.throws(() => new IRepositorio(), TypeError);
@@ -35,6 +36,18 @@ test('los campos privados no se modifican a través de los datos devueltos', () 
   assert.equal(cliente.nombre, 'Ana López');
   assert.equal(cliente.obtenerDatos().NombreCompleto, 'Ana López');
   assert.equal(Object.keys(cliente).length, 0);
+});
+
+test('los permisos CRUD cambian según el rol y protegen los datos de otros módulos', () => {
+  assert.deepEqual(accionesModulo('SuperAdministrador', 'Vehiculo'), ['r', 'c', 'u', 'd']);
+  assert.deepEqual(accionesModulo('Administrador', 'PagoColaborador'), ['r', 'c']);
+  assert.deepEqual(accionesModulo('Vendedor', 'Venta'), ['r', 'c']);
+  assert.deepEqual(accionesModulo('Vendedor', 'Cliente'), ['r', 'c', 'u']);
+  assert.deepEqual(accionesModulo('Cliente', 'Venta'), []);
+  assert.throws(
+    () => exigirAccionModulo({ Rol: 'Vendedor' }, 'Vehiculo', 'u'),
+    { status: 403 }
+  );
 });
 
 test('repositorios polimórficos guardan mediante el mismo contrato', async () => {
@@ -80,8 +93,8 @@ test('las ventas al cliente usan el tipo de cambio oficial vigente', () => {
     ReferenciaPago: 'TRANSFER-1001'
   });
   const detalle = pago.obtenerDetalle();
-  assert.equal(detalle.TasaCambio, 36.6243);
-  assert.equal(detalle.TotalNIO, 3662.43);
+  assert.equal(detalle.TasaCambio, 36.60);
+  assert.equal(detalle.TotalNIO, 3660);
 });
 
 test('la ficha distingue vehículos nuevos sin placa y usados por kilometraje', () => {

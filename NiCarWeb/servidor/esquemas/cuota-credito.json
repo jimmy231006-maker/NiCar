@@ -1,0 +1,12 @@
+[
+  { "name": "IdCuotaCredito", "type": "integer", "required": true, "generated": true },
+  { "name": "IdCredito", "type": "integer", "required": true },
+  { "name": "NumeroCuota", "type": "smallint", "required": true, "minimo": 1 },
+  { "name": "FechaVencimiento", "type": "date", "required": true },
+  { "name": "CapitalUSD", "type": "numeric", "required": true, "minimo": 0 },
+  { "name": "InteresUSD", "type": "numeric", "required": true, "minimo": 0 },
+  { "name": "CargosUSD", "type": "numeric", "required": true, "minimo": 0, "default": 0 },
+  { "name": "MontoProgramadoUSD", "type": "numeric", "required": true, "minimo": 0.01 },
+  { "name": "MontoPagadoUSD", "type": "numeric", "required": true, "minimo": 0, "default": 0 },
+  { "name": "Estado", "type": "character varying", "required": true, "max": 20 }
+]

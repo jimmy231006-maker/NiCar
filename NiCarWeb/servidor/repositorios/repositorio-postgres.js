@@ -72,7 +72,14 @@ export class RepositorioPostgres extends IRepositorio {
   async cambiarEstado(codigo) {
     const campo = this.#tabla === 'Venta' ? 'Activa' : 'Activo';
     if (!this.#columnas.includes(campo)) {
-      rechazar('Esta entidad conserva su historial.');
+      if (!this.#columnas.includes('Estado')) rechazar('Esta entidad conserva su historial.');
+      const resultado = await this.#baseDatos.query(
+        `UPDATE nicar."${this.#tabla}" SET "Estado"='Anulado'
+         WHERE "${this.#clavePrimaria}"=$1 AND "Estado"<>'Anulado' RETURNING *`,
+        [codigo]
+      );
+      if (!resultado.rows[0]) rechazar('Registro no encontrado o ya anulado.', 404);
+      return resultado.rows[0];
     }
     const resultado = await this.#baseDatos.query(
       `UPDATE nicar."${this.#tabla}" SET "${campo}"=NOT "${campo}"

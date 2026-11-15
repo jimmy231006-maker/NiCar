@@ -1,0 +1,11 @@
+[
+  { "name": "IdContratoVenta", "type": "integer", "required": true, "generated": true },
+  { "name": "IdVenta", "type": "integer", "required": true },
+  { "name": "NumeroContrato", "type": "character varying", "required": true, "max": 80 },
+  { "name": "FechaFirma", "type": "date", "required": true },
+  { "name": "Estado", "type": "character varying", "required": true, "max": 20 },
+  { "name": "DocumentoUrl", "type": "character varying", "max": 500 },
+  { "name": "Observaciones", "type": "character varying", "max": 500 },
+  { "name": "RegistradoPor", "type": "integer", "required": true },
+  { "name": "FechaRegistro", "type": "timestamp with time zone", "required": true }
+]
