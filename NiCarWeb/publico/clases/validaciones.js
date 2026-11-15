@@ -39,6 +39,27 @@ export class Validaciones {
     const edad = anioActual - anio - (actual.slice(5) < nacimiento.slice(5) ? 1 : 0);
     return { value: valor, birth: nacimiento, age: edad };
   }
+  validarIdentificacion(tipo, numero, edad, departamentos = this.#configuracion.codigos) {
+    const valor = String(numero || '').trim().toUpperCase();
+    if (tipo === 'Cedula') {
+      const nacimiento = this.obtenerNacimiento(valor, departamentos);
+      this.#exigir(nacimiento.age >= 18, 'Debés tener 18 años cumplidos para registrarte.');
+      return { tipo, value: nacimiento.value, birth: nacimiento.birth, age: nacimiento.age };
+    }
+    const patron = tipo === 'Pasaporte' || tipo === 'Residencia'
+      ? /^[A-Z0-9]+(?:-[A-Z0-9]+)*$/ : null;
+    const minimo = tipo === 'Residencia' ? 6 : 5;
+    this.#exigir(patron && valor.length >= minimo && valor.length <= 20 && patron.test(valor),
+      tipo === 'Pasaporte'
+        ? 'El pasaporte debe tener de 5 a 20 letras o números; puede incluir guiones.'
+        : tipo === 'Residencia'
+          ? 'La residencia debe tener de 6 a 20 letras o números; puede incluir guiones.'
+          : 'Seleccioná cédula, pasaporte o residencia.');
+    const edadNumero = Number(edad);
+    this.#exigir(Number.isInteger(edadNumero) && edadNumero >= 18 && edadNumero <= 120,
+      'Ingresá una edad entera entre 18 y 120 años.');
+    return { tipo, value: valor, birth: null, age: edadNumero };
+  }
   validarRegistro(datos) {
     this.validarNombre(datos.Nombre);
     this.validarNombre(datos.Nombres);
@@ -48,9 +69,9 @@ export class Validaciones {
     this.validarContrasena(datos.Contrasena);
     this.#exigir(datos.Nombre.length <= 100 && datos.Correo.length <= 50, 'Revisá nombre y correo.');
     this.#exigir(datos.Confirmacion === datos.Contrasena, 'Las contraseñas no coinciden.');
-    const nacimiento = this.obtenerNacimiento(datos.Cedula);
-    this.#exigir(nacimiento.age >= 18, 'Debés tener 18 años cumplidos para registrarte.');
-    return nacimiento;
+    return this.validarIdentificacion(
+      datos.TipoIdentificacion, datos.NumeroIdentificacion, datos.EdadDeclarada
+    );
   }
   validarCita(datos) {
     this.validarTelefono(datos.Telefono);
@@ -158,14 +179,16 @@ export class Validaciones {
       this.validarNombre(datos.Nombres);
       this.validarNombre(datos.Apellidos);
       this.#exigir(!datos.RazonSocial, 'La persona natural usa nombres y apellidos.');
+      const identificacion = this.validarIdentificacion(
+        datos.TipoIdentificacion, datos.NumeroIdentificacion, datos.EdadDeclarada
+      );
+      datos.NumeroIdentificacion = identificacion.value;
+      datos.EdadDeclarada = identificacion.age;
     } else {
       this.#exigir(datos.RazonSocial && !datos.Nombres && !datos.Apellidos &&
         datos.TipoIdentificacion === 'RUC', 'La empresa requiere razón social y RUC.');
-    }
-    if (datos.TipoIdentificacion === 'Cedula') {
-      const nacimiento = this.obtenerNacimiento(datos.NumeroIdentificacion);
-      this.#exigir(nacimiento.age >= 16, 'Revisá la edad de la cédula.');
-      datos.NumeroIdentificacion = nacimiento.value;
+      this.#exigir(/^[A-Z0-9-]{10,20}$/i.test(datos.NumeroIdentificacion || ''), 'Revisá el formato del RUC.');
+      datos.EdadDeclarada = null;
     }
   }
   validarMes(valor) {
