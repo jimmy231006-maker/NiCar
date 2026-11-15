@@ -9,7 +9,21 @@ export class Validaciones {
     return new Intl.DateTimeFormat('en-CA', formato).format(new Date());
   }
   validarNombre(valor) { this.#exigir(/^[\p{L}\p{M}]+(?:[ '\u2019-][\p{L}\p{M}]+)*$/u.test(String(valor || '').trim()), 'El nombre solo admite letras, espacios, guiones y apóstrofes.'); }
-  validarCorreo(valor) { this.#exigir(typeof valor === 'string' && valor.length <= 120 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor), 'Ingresá un correo electrónico válido.'); }
+  validarCorreo(valor) {
+    const correo = typeof valor === 'string' ? valor.trim() : '';
+    const partes = correo.split('@');
+    const parteLocal = partes.length === 2 ? partes[0] : '';
+    const dominio = partes.length === 2 ? partes[1] : '';
+    const etiquetas = dominio.split('.');
+    const formatoValido = correo.length <= 254 && parteLocal.length > 0 &&
+      parteLocal.length <= 64 && !parteLocal.startsWith('.') && !parteLocal.endsWith('.') &&
+      !parteLocal.includes('..') &&
+      /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+$/i.test(parteLocal) &&
+      etiquetas.length >= 2 &&
+      etiquetas.every(etiqueta => /^(?!-)[a-z0-9-]{1,63}(?<!-)$/i.test(etiqueta)) &&
+      etiquetas.at(-1).length >= 2 && /^[a-z]{2,}$/i.test(etiquetas.at(-1));
+    this.#exigir(formatoValido, 'Ingresá un correo completo y válido, por ejemplo nombre@dominio.com.');
+  }
   validarTelefono(valor) { this.#exigir(/^[578][0-9]{7}$/.test(String(valor || '')), 'El teléfono debe tener 8 dígitos y comenzar con 5, 7 u 8.'); }
   validarContrasena(valor) { this.#exigir(typeof valor === 'string' && valor.length >= 12 && valor.length <= 100, 'La contraseña debe tener entre 12 y 100 caracteres.'); }
   obtenerNacimiento(entrada, departamentos = this.#configuracion.codigos, actual = this.fechaDeHoy()) {
