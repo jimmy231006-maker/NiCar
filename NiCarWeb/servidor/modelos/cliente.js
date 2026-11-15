@@ -1,21 +1,22 @@
 import { Persona } from './persona.js';
 
 export class Cliente extends Persona {
-  #cedula;
-  #nacimiento;
+  #identificacion;
 
-  constructor(nombre, correo, cedula, nacimiento) {
+  constructor(nombre, correo, identificacion) {
     super(nombre, correo);
-    this.#cedula = cedula;
-    this.#nacimiento = nacimiento;
+    this.#identificacion = { ...identificacion };
   }
 
   obtenerDatos() {
     return {
       ...super.obtenerDatos(),
       Rol: 'Cliente',
-      Cedula: this.#cedula,
-      Nacimiento: this.#nacimiento
+      TipoDocumento: this.#identificacion.tipo,
+      NumeroDocumento: this.#identificacion.value,
+      EdadDeclarada: this.#identificacion.age,
+      Cedula: this.#identificacion.tipo === 'Cedula' ? this.#identificacion.value : null,
+      Nacimiento: this.#identificacion.birth
     };
   }
 }
