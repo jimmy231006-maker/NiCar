@@ -54,7 +54,14 @@ function abrirCrearCliente(soloCrear = false) {
     crearCampo('Apellidos',{required:true,max:100}),
     crearCampo('Telefono',{required:true,max:8,type:'tel',label:'Teléfono'}),
     crearCampo('Correo',{required:true,type:'email',max:50}),
-    crearCampo('Cedula',{required:true,max:16,label:'Cédula nicaragüense'}),
+    crearCampo('TipoIdentificacion',{required:true,choices:[
+      {value:'Cedula',label:'Cédula nicaragüense'},
+      {value:'Pasaporte',label:'Pasaporte'},
+      {value:'Residencia',label:'Residencia'}
+    ]}),
+    crearCampo('NumeroIdentificacion',{required:true,max:20,label:'Número de identificación'}),
+    crearCampo('EdadDeclarada',{type:'number',min:18,max:120,step:1,
+      label:'Edad (solo pasaporte o residencia)'}),
     crearCampo('Contrasena',{required:true,type:'contrasena',max:100,minLength:12,
       label:'Contraseña temporal (mínimo 12 caracteres)'}),
     crearCampo('Confirmacion',{required:true,type:'contrasena',max:100,label:'Confirmar contraseña'})
