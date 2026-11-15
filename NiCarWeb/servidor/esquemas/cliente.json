@@ -16,9 +16,11 @@
     "required": true,
     "max": 30
   },
+  { "name": "EdadDeclarada", "type": "smallint", "max": 120 },
   { "name": "Telefono", "type": "character varying", "max": 20 },
   { "name": "Correo", "type": "character varying", "max": 120 },
   { "name": "Direccion", "type": "character varying", "max": 300 },
   { "name": "FechaRegistro", "type": "timestamp without time zone", "required": true },
   { "name": "Activo", "type": "boolean", "required": true }
 ]
+
