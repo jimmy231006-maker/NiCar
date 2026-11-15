@@ -4,6 +4,7 @@ import { ServicioCitas } from './servicios/servicio-citas.js';
 
 export async function atenderCitas(solicitud, respuesta, ruta, usuario) {
   if (ruta === '/api/citas' && solicitud.method === 'POST') {
+    exigirRol(usuario, ['Cliente']);
     const datos = await leerFormulario(solicitud);
     const cita = await ejecutarTransaccion(baseDatos =>
       new ServicioCitas(baseDatos).crear(datos, usuario)
@@ -20,7 +21,7 @@ export async function atenderCitas(solicitud, respuesta, ruta, usuario) {
   if (aviso && solicitud.method === 'PUT') {
     exigirRol(usuario, ['Cliente']);
     await new ServicioCitas(conexion).marcarAvisoLeido(aviso[1], usuario);
-    responderJson(respuesta, { message: 'Aviso leído.' });
+    responderJson(respuesta, { message: 'Aviso le�do.' });
     return true;
   }
   const coincidencia = /^\/api\/citas(?:\/(\d+)(\/cliente)?)?$/.exec(ruta);
@@ -39,3 +40,4 @@ export async function atenderCitas(solicitud, respuesta, ruta, usuario) {
   } else return false;
   return true;
 }
+
