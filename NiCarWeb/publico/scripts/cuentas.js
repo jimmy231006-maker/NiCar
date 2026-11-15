@@ -50,6 +50,13 @@ export async function mostrarUsuarios() {
   contenido.append(
     tabla(await consultarApi('/usuarios'), (fila) => [
       crearElemento('button', { onClick: () => editarCuenta(fila) }, 'Editar'),
+      ...(fila.IdUsuario !== estado.usuario.IdUsuario && fila.Activo
+        ? [crearElemento(
+            'button',
+            { onClick: () => restablecerContrasena(fila) },
+            'Restablecer contraseña'
+          )]
+        : []),
       crearElemento(
         'button',
         {
@@ -65,6 +72,29 @@ export async function mostrarUsuarios() {
         fila.Activo ? 'Desactivar' : 'Activar'
       )
     ])
+  );
+}
+
+function restablecerContrasena(fila) {
+  abrirFormularioModal(
+    'Restablecer contraseña de ' + fila.NombreCompleto,
+    [
+      crearCampo('Contrasena', {
+        required: true,
+        type: 'contrasena',
+        max: 100,
+        minLength: 12,
+        label: 'Nueva contraseña temporal (mínimo 12 caracteres)'
+      })
+    ],
+    async (datos) => {
+      await consultarApi(
+        '/usuarios/' + fila.IdUsuario + '/contrasena',
+        'POST',
+        datos
+      );
+      await mostrarUsuarios();
+    }
   );
 }
 
