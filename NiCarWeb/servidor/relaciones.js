@@ -9,7 +9,10 @@ const referencias = {
   IdTipoCosto: 'TipoCosto',
   IdFinanciera: 'Financiera',
   IdUsuario: 'Usuario',
-  IdContrato: 'ContratoColaborador'
+  IdContrato: 'ContratoColaborador',
+  IdVenta: 'Venta',
+  IdCredito: 'Credito',
+  RegistradoPor: 'Usuario'
 };
 export async function validarRelaciones(baseDatos, datos, tipoEntidad) {
   for (const [clave, entidad] of Object.entries(referencias)) {
@@ -17,7 +20,9 @@ export async function validarRelaciones(baseDatos, datos, tipoEntidad) {
     const sql = 'SELECT * FROM nicar."' + entidad + '" WHERE "' + clave + '"=$1 FOR SHARE';
     const resultado = await baseDatos.query(sql,[datos[clave]]);
     const fila = resultado.rows[0];
-    if (!fila?.Activo) rechazar('Seleccioná un registro activo en ' + clave + '.');
+    const activo = fila && ('Activo' in fila ? fila.Activo
+      : 'Activa' in fila ? fila.Activa : fila.Estado !== 'Anulado');
+    if (!activo) rechazar('Seleccioná un registro activo en ' + clave + '.');
     if (['ContratoColaborador','PagoColaborador'].includes(tipoEntidad) && clave === 'IdUsuario' && fila.Rol === 'Cliente') {
       rechazar('El registro requiere un colaborador, no un cliente.');
     }

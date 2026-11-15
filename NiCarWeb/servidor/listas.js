@@ -7,6 +7,7 @@ const configuracion = {
   Cliente: ['IdCliente', 'coalesce("RazonSocial",concat("Nombres",\' \',"Apellidos"))'],
   Proveedor: ['IdProveedor', '"NombreProveedor"'],
   Financiera: ['IdFinanciera', '"Nombre"'],
+  Venta: ['IdVenta', '"NumeroComprobante"'],
   TipoCosto: ['IdTipoCosto', '"Nombre"']
 };
 export async function atenderListas(solicitud, respuesta, ruta, usuario) {
@@ -25,6 +26,18 @@ export async function atenderListas(solicitud, respuesta, ruta, usuario) {
       'SELECT "IdUsuario" AS id,"NombreCompleto" AS label FROM nicar."Usuario" WHERE "Activo" AND "Rol"=\'Vendedor\' ORDER BY "NombreCompleto"'
     );
     responderJson(respuesta, resultado.rows);
+    return true;
+  }
+  if (ruta === '/api/listas/Venta' && solicitud.method === 'GET') {
+    exigirRol(usuario, [...administradores, 'Vendedor']);
+    const filas = await conexion.query(
+      `SELECT "IdVenta" AS id,"NumeroComprobante" || ' · USD ' ||
+       to_char(coalesce("Total","PrecioVenta"-"Descuento"),'FM999,999,990.00') AS label
+       FROM nicar."Venta" WHERE "Activa" AND ($1::integer IS NULL OR "IdVendedor"=$1)
+       ORDER BY "IdVenta" DESC LIMIT 1000`,
+      [usuario.Rol === 'Vendedor' ? usuario.IdUsuario : null]
+    );
+    responderJson(respuesta, filas.rows);
     return true;
   }
   if (!ruta.startsWith('/api/listas/') || !configuracion[tabla] || solicitud.method !== 'GET') return false;

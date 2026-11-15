@@ -7,6 +7,7 @@ export const opciones = {
   TipoContrato: ['Indefinido','Plazo fijo','Proyecto'],
   TipoPago: ['Salario','Comision'],
   MetodoPagoColaborador: ['Transferencia','Efectivo','Cheque'],
+  MetodoPagoVenta: ['Efectivo', 'Transferencia', 'Tarjeta', 'Cheque'],
   Condicion: ['Nuevo', 'Usado'],
   Moneda: ['USD', 'NIO'],
   MetodoPago: ['Efectivo', 'Transferencia', 'Tarjeta', 'Financiamiento'],

@@ -13,7 +13,7 @@ export class Pago extends IPago {
       throw new TypeError('Pago es la clase padre de los medios de pago.');
     }
     this.#datos = { ...datos };
-    this.#tasa = TasaCambio.oficial();
+     this.#tasa = TasaCambio.comercial();
     const precio = validaciones.centavos(datos.PrecioVenta);
     const descuento = validaciones.centavos(datos.Descuento);
     this.#totalCordobas = this.#tasa.convertirACordobas(precio - descuento, datos.Moneda);

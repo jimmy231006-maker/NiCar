@@ -26,13 +26,24 @@ function acciones(cita) {
   const botones = [];
   const personal = estado.usuario.Rol !== 'Cliente';
   botones.push(crearElemento('button', { onClick: () => reprogramar(cita) }, 'Reprogramar'));
-  botones.push(crearElemento('button', { onClick: async () => {
-    if (!confirm('¿Cancelar esta cita?')) return;
-    try {
-      await consultarApi('/citas/' + cita.IdCita, 'DELETE', {});
+  const esAdmin = ['SuperAdministrador', 'Administrador'].includes(estado.usuario.Rol);
+  if (estado.usuario.Rol === 'Cliente') {
+    botones.push(crearElemento('button', { onClick: async () => {
+      if (!confirm('¿Cancelar esta cita?')) return;
+      try {
+        await consultarApi('/citas/' + cita.IdCita, 'DELETE', {});
+        await mostrarCitas();
+      } catch (problema) { mostrarAviso(problema.message); }
+    } }, 'Cancelar'));
+  } else if (esAdmin) {
+    botones.push(crearElemento('button', { onClick: () => abrirFormularioModal('Cancelar cita', [
+      crearCampo('MotivoCancelacion', { required:true, maxLength:500,
+        label:'Motivo de cancelación', placeholder:'Explicá brevemente el motivo' })
+    ], async datos => {
+      await consultarApi('/citas/' + cita.IdCita, 'DELETE', datos);
       await mostrarCitas();
-    } catch (problema) { mostrarAviso(problema.message); }
-  } }, 'Cancelar'));
+    }) }, 'Cancelar con motivo'));
+  }
   if (personal) {
     botones.push(crearElemento('button', { onClick: async () => {
       try {

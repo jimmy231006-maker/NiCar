@@ -21,6 +21,9 @@ const titulos = {
   Financiera: 'Financieras',
   ContratoColaborador: 'Contratos de colaboradores',
   PagoColaborador: 'Pagos de colaboradores',
+  CuotaCredito: 'Tabla del banco (solo consulta)',
+  ContratoVenta: 'Contratos de venta',
+  PagoVenta: 'Pagos de ventas',
   TipoCosto: 'Tipos de costo',
   CostoVehiculo: 'Costos',
   AdquisicionVehiculo: 'Adquisiciones',
@@ -37,6 +40,7 @@ const referencias = {
   IdContrato: 'ContratoColaborador',
   IdTipoCosto: 'TipoCosto',
   IdVendedor: 'Vendedor'
+  , IdVenta: 'Venta'
 };
 export async function mostrarAdministracion(seleccionado) {
   estado.modulos = await consultarApi('/modulos');
@@ -72,10 +76,12 @@ export async function mostrarAdministracion(seleccionado) {
   contenido.append(
     tabla(
       filas,
-      modulo.writable && modulo.editable
+      modulo.editable || modulo.deletable
         ? (fila) => [
-            crearElemento('button', { onClick: () => editarRegistro(modulo, fila) }, 'Editar'),
-            crearElemento(
+            ...(modulo.editable
+              ? [crearElemento('button', { onClick: () => editarRegistro(modulo, fila) }, 'Editar')]
+              : []),
+            ...(modulo.deletable ? [crearElemento(
               'button',
               {
                 onClick: async () => {
@@ -94,8 +100,10 @@ export async function mostrarAdministracion(seleccionado) {
                   }
                 }
               },
-              fila.Activo === false ? 'Activar' : 'Desactivar'
-            )
+              fila.Activo === false ? 'Activar'
+                : fila.Estado === 'Anulado' ? 'Anulado'
+                  : 'Anular registro'
+            )] : [])
           ]
         : null
     )
@@ -168,6 +176,14 @@ async function editarRegistro(modulo, fila = {}, iniciales = {}) {
         if (plazo.value && (Number(plazo.value) < Number(plazo.min) || Number(plazo.value) > Number(plazo.max))) plazo.value = '';
       });
       entradas.push(adaptarFormularioPago(entradas));
+    }
+    if (modulo.table === 'ContratoVenta') {
+      entradas.push(crearCampo('Estado', {
+        required:true,
+        choices:modulo.options.Estado,
+        value:iniciales.Estado ?? fila.Estado ?? 'Borrador',
+        label:'Estado del contrato'
+      }));
     }
     abrirFormularioModal(
       (Object.keys(fila).length ? 'Editar ' : 'Agregar ') +

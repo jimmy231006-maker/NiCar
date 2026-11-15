@@ -1,10 +1,10 @@
 # NiCar Web
 
-Aplicación independiente en HTML, CSS y JavaScript para consultar vehículos, registrar clientes y citas presenciales, y administrar la operación de la agencia. El backend es Node.js y la base de datos PostgreSQL de Supabase.
+Sistema web para una agencia de vehículos en Nicaragua. El navegador usa HTML, CSS y JavaScript; una API en Node.js aplica las reglas y consulta PostgreSQL en Supabase. La conexión a la base de datos nunca se expone al navegador.
 
-## Abrir en VS Code
+## Abrir y ejecutar en VS Code
 
-Abre esta carpeta `NiCarWeb` desde VS Code. Requiere Node.js 22.
+Abre **la carpeta `NiCarWeb`** en VS Code. Necesitas Node.js 22 o superior.
 
 ```powershell
 Copy-Item .env.example .env
@@ -12,55 +12,56 @@ npm install
 npm start
 ```
 
-Completa `DATABASE_URL` en `.env` con el Session Pooler de Supabase. Para desarrollo local, usa `APP_ORIGIN=http://localhost:3000`. Después abre http://localhost:3000. Pulsa F5 en VS Code para iniciar el servidor con la configuración incluida.
+Completa `DATABASE_URL` en `.env` con la cadena del **Session Pooler** de Supabase. Para uso local, define `APP_ORIGIN=http://localhost:3000`. Después visita http://localhost:3000. No subas `.env`, contraseñas ni llaves a GitHub.
 
-No subas `.env` ni contraseñas a GitHub. El navegador no se conecta directamente a Supabase: las consultas pasan por el servidor.
+## Supabase
 
-## Configurar Supabase
+El esquema privado `nicar` tiene migraciones versionadas en `supabase/migrations`. El historial contiene el esquema, citas, validaciones, financiamiento, comisiones, contratos, pagos y avisos de cancelación. El archivo `supabase/seed.sql` inserta datos ficticios de muestra de forma repetible.
 
-En SQL Editor, aplica los scripts en este orden:
+Para enlazar GitHub desde Supabase, selecciona el repositorio `jimmy231006-maker/NiCar` y usa `NiCarWeb` como **Working directory**. Revisa las migraciones antes de activar los cambios automáticos de producción. Para la aplicación, usa el Session Pooler en `DATABASE_URL`; nunca pongas la contraseña de PostgreSQL en archivos públicos.
 
-1. `base-datos/NiCar_PostgreSQL.sql`
-2. `base-datos/08_Citas_PostgreSQL.sql`
-3. `base-datos/09_Clientes_y_cupos_PostgreSQL.sql`
-4. `base-datos/10_Vehiculos_pagos_comisiones.sql`
-5. `base-datos/11_Horarios_marcas_fotografias.sql`
-6. `base-datos/12_Citas_45_minutos_clientes.sql`
-7. `base-datos/13_Condicion_vehiculos.sql`
-8. `base-datos/14_Financiamiento_credex.sql`
-9. `base-datos/15_comision_fija_5_por_ciento.sql`
-10. `base-datos/16_contratos_y_pagos_colaboradores.sql`
+## Datos de demostración y cuentas
 
-Configura Supabase antes de desplegar el servicio. No guardes claves de servicio en el frontend.
+La base incluye 8 marcas, 16 modelos, 20 vehículos, 10 clientes ficticios, 3 proveedores y 6 tipos de costo. Las fichas de muestra llevan nombres/correos identificados como ficticios; confirma siempre inventario, kilometraje y documentos antes de ofrecer una unidad real. Las fotos del catálogo se muestran como referencias.
 
-## Funciones
+Hay tres vendedores: `salajimmy2@gmail.com`, `salajimmy3@gmail.com` y `salajimmy4@gmail.com`. `jennzmunoz8@gmail.com` y `jimmy231006@gmail.com` son administradores; `leivavictor220503@gmail.com` es superadministrador. La cuenta de Víctor `fcobusts@gmail.com` permanece como administrador. Las cuentas nuevas deben cambiar su contraseña temporal al iniciar sesión.
 
-- Catálogo público con información de autos, camionetas y motocicletas; no se compra ni se compara en línea.
-- Registro de clientes mayores de edad con cédula nicaragüense y teléfono local de ocho dígitos que comienza por 5, 7 u 8.
-- Citas presenciales de lunes a sábado, de 08:00 a 17:00, de 45 minutos y hasta diez por día, asignadas a vendedores disponibles.
-- Administración de clientes, vehículos, marcas, modelos, proveedores, adquisiciones, ventas, citas, contratos y pagos.
-- Vehículos nuevos sin placa y con cero kilómetros; los usados muestran kilometraje y sus características.
-- Financiamiento externo, incluido CREDEX si la financiera acepta la operación. NiCar muestra las condiciones registradas del contrato; la tabla oficial, el saldo y los pagos se confirman con la entidad financiera.
-- Comisión de vendedor fija del 5% de la venta neta. Los módulos de nómina calculan INSS laboral e IR por separado; la parte patronal del INSS no se resta del salario.
-- La clase de cálculos de nómina usa INSS laboral del 7% y la tabla progresiva de IR configurada en el proyecto. Revisar y mantener estos porcentajes conforme a las reglas vigentes antes de usarlo en nómina real.
+El registro público de un cliente guarda la ficha y la cuenta vinculada en una sola transacción; exige cédula nicaragüense y mayoría de edad. El cliente es un rol independiente del vendedor.
 
-## Diseño adaptable
+## Reglas principales
 
-Las hojas CSS incluyen media queries para escritorio, tabletas y celulares, con ajustes de navegación, formularios, tablas, fichas y catálogo.
+- El catálogo permite consultar vehículos, pero no comparar ni comprar en línea. La venta se registra con personal de la agencia.
+- Autos, camionetas, camiones y motos tienen sus datos técnicos; una moto no lleva puertas. Un vehículo nuevo queda sin placa y con cero kilómetros.
+- Una cita puede reservarse con o sin cuenta, solicita los datos necesarios y valida que la persona tenga 18 años. Solo se agenda a futuro, de lunes a sábado, de 08:00 a 16:15 en bloques de 45 minutos, con vendedor disponible y hasta 12 citas por vendedor al día.
+- La administración puede cancelar una cita indicando el motivo. Cuando el cliente inicia sesión, el aviso de cancelación aparece primero.
+- Las ventas se registran en USD; la conversión a córdobas usa C$36.60 y la comisión fija del vendedor es 5%.
+- Los contratos y pagos quedan con historial. La tabla de amortización es para administración y no se presenta al cliente como una tabla oficial del banco.
+- El acceso se organiza por roles. Los vendedores consultan sus citas, ventas, pagos y comisiones; clientes ven sus citas y datos propios; administración gestiona los módulos; superadministración incluye auditoría.
+- Cada módulo aplica permisos CRUD en el servidor, además de ocultar acciones no permitidas en la pantalla:
 
-## Ejecutar comprobaciones
+  | Perfil | Acceso principal |
+  | --- | --- |
+  | Superadministrador | Administra catálogos, inventario, clientes, proveedores, usuarios, contratos y operaciones; consulta auditoría y todos los registros. |
+  | Administrador | Administra los módulos del negocio y las citas; no crea ni modifica cuentas administrativas. |
+  | Vendedor | Consulta inventario, sus citas/clientes/ventas/créditos; registra ventas, contratos y pagos de sus ventas. Puede corregir datos de los clientes que atiende. |
+  | Bodega | Administra inventario y adquisiciones para el control de existencias. |
+  | Recepcionista | Consulta clientes y gestiona agenda; no administra ventas ni cuentas. |
+  | Cliente | Consulta catálogo, sus citas y sus créditos; reserva/cancela sus citas y reporta pagos de su crédito. No accede a administración. |
 
-```powershell
-npm test
-```
+  Los pagos, ventas firmadas, contratos firmados, bitácoras y cuotas bancarias conservan su historial o son de solo lectura; el botón de eliminar no sustituye el control contable. El servidor verifica el rol y el alcance del registro en cada solicitud, no depende solo de ocultar botones.
+- Las validaciones se centralizan en la clase `Validaciones`. Las interfaces comienzan por `I`; clases, servicios y módulos están separados por responsabilidad.
 
-## Desplegar en Render
+## Render
 
-Crea o configura el servicio de Render con `NiCarWeb` como directorio raíz. Usa `npm install --omit=dev` como comando de compilación y `npm start` como comando de inicio. Configura `DATABASE_URL`, `APP_ORIGIN` y `NODE_ENV=production` en las variables privadas del servicio. El servidor escucha el puerto asignado por Render y comprueba la conexión en `/api/health`.
+El `render.yaml` de la raíz del repositorio ya configura el servicio web `nicar` y usa `NiCarWeb` como directorio raíz. Render necesita las variables privadas `DATABASE_URL` y `APP_ORIGIN`; el valor de `APP_ORIGIN` debe ser exactamente la URL del servicio, por ejemplo `https://nicar.onrender.com`, sin una barra al final. El servicio usa `npm install --omit=dev`, `npm start` y revisa `/api/health`.
 
 ## Organización
 
-- `publico/`: HTML, estilos y JavaScript del navegador.
-- `servidor/`: API, modelos, interfaces, servicios, pagos y repositorios.
-- `base-datos/`: esquema inicial y migraciones SQL.
+- `publico/`: HTML, hojas CSS con media queries, imágenes y JavaScript del navegador.
+- `servidor/`: API, clases, interfaces, validaciones, servicios y repositorios.
+- `supabase/migrations/`: historial completo de cambios del esquema.
+- `supabase/seed.sql`: datos de demostración ficticios.
+- `base-datos/`: scripts SQL legibles para revisión académica.
 - `pruebas/`: pruebas automatizadas del proyecto.
+
+Para ejecutar las pruebas existentes: `npm test`.

@@ -67,7 +67,7 @@ export class Validaciones {
     let valor = typeof entrada === 'string' ? entrada.trim() : entrada;
     if (valor === '' || valor == null) {
       this.#exigir(!campo.required || campo.default, 'Completá ' + clave + '.');
-      return null;
+      return campo.default ? undefined : null;
     }
     if (['integer', 'bigint', 'smallint', 'numeric'].includes(campo.type)) {
       valor = this.#validarNumero(valor, campo);
@@ -94,7 +94,10 @@ export class Validaciones {
     const datos = {};
     for (const campo of this.obtenerCampos(tabla)) {
       if (['Activo', 'Activa'].includes(campo.name)) { if (esNuevo) datos[campo.name] = true; }
-      else datos[campo.name] = this.#validarCampo(campo, entrada[campo.name]);
+      else {
+        const valor = this.#validarCampo(campo, entrada[campo.name]);
+        if (valor !== undefined) datos[campo.name] = valor;
+      }
     }
     this.#validarEntidad(tabla, datos);
     return datos;
